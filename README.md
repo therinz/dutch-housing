@@ -1,10 +1,10 @@
 ![Ironhack logo](https://i.imgur.com/1QgrNNw.png)
 
-# Unemployment in Europe
+# House price prediction
 
-Analysis of unemployment statistics in Europe
-<br>Ironhack Berlin week 6 project
-<br>Julia Zimpel, Malon Kraaijvanger, Sunday Oluwadare & Rinze Douma
+A tool to predict the asking price of Dutch real estate
+<br>Ironhack Berlin final project
+<br>Rinze Douma
 <br>18/09/2020
 
 ## Content
@@ -21,13 +21,9 @@ Analysis of unemployment statistics in Europe
 ***
 
 ## Issues
-- Selecting data in huge dataset
-- Cleaning columns in tables
-- Codes used in dataset
+
 
 ## Assumptions
-- Fraction of male / female of total unemployed
-- Some data concerns employment. For ease this has been translated as unemployed = 100% - % employed.
 
 ## Organization
 
