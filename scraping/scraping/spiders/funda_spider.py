@@ -5,7 +5,7 @@ class FundaSpider(scrapy.Spider):
     name = "funda"
     start_urls = ["https://www.funda.nl/koop/amsterdam/"]
     allowed_domains = ["funda.nl"]
-    custom_settings = {'DEPTH_LIMIT': 0}
+    custom_settings = {'DEPTH_LIMIT': 1}
 
     def __init__(self, state="", city="Amsterdam", *args, **kwargs):
         super(FundaSpider, self).__init__(*args, **kwargs)
@@ -71,3 +71,9 @@ def value_block(dl):
 
     return dd
 
+# =======
+#response.xpath("//div[contains(class, 'object-statistics__item')]")/p/strong
+
+#response.css(".object-statistics__item")
+#response.xpath("//div::class").getall()
+#response.xpath("//p[@class='fd-m-none']")
