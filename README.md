@@ -36,9 +36,11 @@ A tool to predict the asking price of Dutch real estate
 ***
 
 #### Other material
+
+
 ***
 
 ## Links
 - [Repository](https://github.com/therinz/unemployment_stats)
 - [Dataset](https://ec.europa.eu/eurostat/web/lfs/data/database)
-- [Translation dictionaries for codes in tables](https://ec.europa.eu/eurostat/estat-navtree-portlet-prod/BulkDownloadListing?sort=1&dir=dic%2Fen)
+https://www.vhmmakelaars.nl/woning-definities
