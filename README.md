@@ -24,6 +24,8 @@ A tool to predict the asking price of Dutch real estate
 
 
 ## Assumptions
+- geen uitpond, huurwoningen
+- no certificates considered
 
 ## Organization
 
