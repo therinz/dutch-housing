@@ -41,8 +41,13 @@ def build_era(x):
     return int((int(start) + int(end)) / 2)
 
 
+def add_prefix(s, prefix):
+    """Add a prefix to distinguish dummies"""
+    return f"{prefix}_{s}"
+
+
 def listing_type(df):
-    """Returns dataframe with property or apartment tags split in cols."""
+    """Split tags in property and apartment columns to dummies."""
 
     # Merge houses and apartments to one column
     df["property_type"] = np.where(df["property_type"].notna(),
@@ -64,13 +69,14 @@ def listing_type(df):
                 if t and t == t}
 
     # Concatenate with original DF
-    pd.concat([df, pd.DataFrame(columns=all_tags)], axis=1)
+    pd.concat([df, pd.DataFrame(columns=[add_prefix(t, "pt")
+                                         for t in all_tags])], axis=1)
 
     # Evaluate whether tag applicable
     for tag in all_tags:
-        df[tag] = np.where(df["property_type"]
-                           .str.contains(tag, case=False),
-                           1, 0)
+        df[add_prefix(tag, "pt")] = np.where(df["property_type"]
+                                             .str.contains(tag, case=False),
+                                             1, 0)
 
     # Cleanup column names
     df.columns = df.columns.str.replace(" ", "_")
@@ -96,13 +102,45 @@ def listing_type(df):
                'corridorflat': ['galerijflat'],
                'villa': ['vrijstaande_woning'],
                'tussenwoning': ['geschakelde_woning']}
+
     for key, elem in combine.items():
+        key = add_prefix(key, "pt")
+        elem = [add_prefix(e, "pt") for e in elem]
         df[key] = np.where(df[[key] + elem].apply(any, axis=1), 1, 0)
 
     # Drop the columns we have combined into others
-    drop = [col for lst in combine.values() for col in lst]
-    useless = ["service_flat", "bedrijfs-_of_dienstwoning"]
+    drop = [add_prefix(col, "pt")
+            for lst in combine.values()
+            for col in lst]
+    useless = [add_prefix("service_flat", "pt"),
+               add_prefix("bedrijfs-_of_dienstwoning", "pt")]
     df.drop(columns=drop+useless, inplace=True)
 
-    return df
 
+def roof_description(col):
+    """Return DataFrame with dummy columns for roof type and form."""
+
+    roof_form = ["zadeldak", "plat dak", "lessenaardak",
+                 "mansarde", "samengesteld", "tentdak",
+                 "dwarskap", "schilddak"]
+    roof_type = ["bitumin", "pannen", "kunststof", "leisteen",
+                 "metaal", "asbest", "riet"]
+
+    # Create dataframe we will return later
+    dummies = pd.DataFrame()
+
+    # Create dummies
+    for pat in roof_form:
+        dummies[add_prefix(pat, "rf")] = np.where(col.str.contains(pat,
+                                                                   case=False,
+                                                                   na=False),
+                                                  1, 0)
+    for pat in roof_type:
+        dummies[add_prefix(pat, "rt")] = np.where(col.str.contains(pat,
+                                                                   case=False,
+                                                                   na=False),
+                                                  1, 0)
+
+    return dummies
+
+test = 3
