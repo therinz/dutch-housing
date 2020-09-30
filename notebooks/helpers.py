@@ -1,5 +1,10 @@
+import requests
+import urllib.parse
+
 import pandas as pd
 import numpy as np
+
+from getpass import getpass
 
 
 def convert_elapsed_time(x):
@@ -141,4 +146,22 @@ def roof_description(col):
 
 
 def create_dummy(col, pattern):
+    """Return 1 if col contains pattern, else 0."""
+
     return np.where(col.str.contains(pattern, case=False, na=False), 1, 0)
+
+
+def get_coords(address, key):
+    """Return coordinates based on address and postcode."""
+
+    # Build request URL
+    url = f"https://maps.googleapis.com/maps/api/geocode/json?key={key}&address="
+    name = urllib.parse.quote_plus(address.encode('utf-8'))
+    resp = requests.get(url + name)
+    r = resp.json()
+
+    # If something went wrong we want to return a 0,0 tuple.
+    if resp.status_code != 200 or not r["results"]:
+        return 0, 0
+    return tuple([val for val in r["results"][0]["geometry"]["location"].values()])
+
