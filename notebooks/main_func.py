@@ -17,12 +17,20 @@ from helpers import garden
 
 
 def clean_dataset(filename):
+    """Open, clean and save a Funda dataset."""
 
+    # Open JSON file
     df = pd.read_json(os.path.join(os.pardir, "data", filename))
+
+    # Rename columns
     rename_cols(df)
+    # Drop irrelevant cols & rows
     initial_drop(df)
+    # Extract numeric data
     convert_num_cols(df)
+    # Process binary information
     binary_columns(df)
+    # Convert categorical data to dummy columns
     dummy_columns(df)
 
     # Drop columns that are not significant
@@ -33,15 +41,18 @@ def clean_dataset(filename):
         'garden_patio', 'garage_type', 'storage_features', 'storage_isolation'
     ], inplace=True)
 
+    # Get coordinates and bin into neighborhoods
+    geolocation(df, getpass())
+
+    # Export to pickle file
+    df.to_pickle("../data/intermediate.pkl")
+
 
 def rename_cols(df):
 
     # Set categories order
-    col_trans = ["OVE", "BOU", "OPP",
-                 "IND", "ENE", "BUI",
-                 "GAR", "BER", "PAR",
-                 "VVE", "KAD", "BED",
-                 "VEI"]
+    col_trans = ["OVE", "BOU", "OPP", "IND", "ENE", "BUI", "GAR",
+                 "BER", "PAR", "VVE", "KAD", "BED", "VEI"]
 
     # Build list of column names incl category label
     order = [x
@@ -130,6 +141,8 @@ def rename_cols(df):
             'BOU-Soort object': 'prop_build_area'}
     df.rename(cols, axis=1, inplace=True)
 
+    return df
+
 
 def initial_drop(df):
     """Drop data which is not relevant."""
@@ -156,10 +169,15 @@ def initial_drop(df):
           .reset_index(drop=True))
 
     # Drop new build projects which aren't specific
-    df.drop(df[df["address"]
-            .str.contains(r"bouw|appartemnt|wonen", case=False, regex=True)]
-            .index,
-            inplace=True)
+    df.drop(
+        df[
+            df["address"].str.contains(r"bouw|appartemnt|wonen",
+                                       case=False,
+                                       regex=True)
+        ].index,
+        inplace=True)
+
+    return df
 
 
 def convert_num_cols(df):
@@ -187,11 +205,12 @@ def convert_num_cols(df):
     df.drop(columns=["build_era"], inplace=True)
 
     # Build year, bathrooms, toilets, area and volume
-    df = (df.assign(build_year=extract_num(df["build_year"], "year"),
-                    num_bathrooms=extract_num(df["bathrooms"], "bathrooms"),
-                    num_toilets=extract_num(df["bathrooms"], "toilets"),
-                    property_m2=extract_num(df["property_m2"], "meter"),
-                    property_m3=extract_num(df["property_m3"], "meter"))
+    df = (df
+          .assign(build_year=extract_num(df["build_year"], "year"),
+                  num_bathrooms=extract_num(df["bathrooms"], "bathrooms"),
+                  num_toilets=extract_num(df["bathrooms"], "toilets"),
+                  property_m2=extract_num(df["property_m2"], "meter"),
+                  property_m3=extract_num(df["property_m3"], "meter"))
           .drop(columns="bathrooms"))
 
     # Extract number of rooms and bedrooms
@@ -212,6 +231,8 @@ def convert_num_cols(df):
     # Drop original rooms column
     df.drop(columns="num_rooms", inplace=True)
 
+    return df
+
 
 def binary_columns(df):
     """When columns have essentially 2 values, set as either 1 or 0."""
@@ -226,13 +247,16 @@ def binary_columns(df):
         df[col] = np.where(df[col] == "Ja", 1, 0)
 
     # VVE column which includes digits
-    df["vve_per_contr"] = np.where(df["vve_per_contr"]
-                                   .str.contains("ja", case=False),
-                                   1, 0)
+    df["vve_per_contr"] = np.where(
+        df["vve_per_contr"].str.contains("ja", case=False),
+        1,
+        0
+    )
 
     # Other binary oppositions
     df["new_build"] = np.where(df["new_build"] == "Nieuwbouw",
-                               1, 0)
+                               1,
+                               0)
 
     # Consider subtypes equal and set each category to 1 if available
     other_binary = ["balcony", "garden", "storage_type"]
@@ -241,11 +265,13 @@ def binary_columns(df):
 
     # Any on-street parking is considered 0
     pattern = r"openbaar|betaald|vergunning"
-    df["parking"] = np.where(df["parking"].str.contains(pattern,
-                                                        case=False,
-                                                        regex=True,
-                                                        na=True),
-                             0, 1)
+    df["parking"] = np.where(
+        df["parking"].str.contains(pattern, case=False, regex=True, na=True),
+        0,
+        1
+    )
+
+    return df
 
 
 def dummy_columns(df):
@@ -281,11 +307,14 @@ def dummy_columns(df):
     df["apartment_level"] = extract_num(df["apartment_level"], "app_level")
 
     # Set energy label, fall back to temp label and level G
-    df["energy_label"] = np.where(len(df["energy_label"]) == 1,
-                                  df["energy_label"],
-                                  np.where(len(df["energy_label_temp"]) == 1,
-                                           df["energy_label_temp"],
-                                           "G"))
+    df["energy_label"] = np.where(
+        df["energy_label"].str.len() == 1,
+        df["energy_label"],
+        np.where(
+            df["energy_label_temp"].str.len() == 1,
+            df["energy_label_temp"],
+            "G")
+    )
 
     # Dummies for energy
     df = pd.get_dummies(df,
@@ -302,7 +331,60 @@ def dummy_columns(df):
                         drop_first=True,
                         prefix="ga")
 
-def geolocation(df):
+    return df
+
+
+def geolocation(df, key):
     """Bin listings into neighborhoods."""
 
+    # Delete additions to house number and drop rows without house number
+    df["address"] = df["address"].str.extract(r"(.+ \d+)", expand=False)
+    df.dropna(subset=["address"], inplace=True)
 
+    # Make the full address into one column
+    df = (df.assign(full_address=
+                    df[["address", "postcode", "city"]].agg(", ".join, axis=1))
+          .drop(columns=["address", "postcode", "city"]))
+
+    # Rename address column and bring to front
+    df.insert(0, column="address", value=df.pop("full_address"))
+
+    # Get the coordinates of every location
+    coords = (gpd.tools.geocode(df["address"],
+                                provider="google",
+                                api_key=key))
+
+    # Make sure downloaded coordinates are in correct format
+    coords.to_crs(epsg=4326, inplace=True)
+
+    # Load neighborhoods of Amsterdam
+    gdf = gpd.read_file("../data/ams_neighborhoods.shp")
+
+    # Add the neighborhood for every location
+    geo_combi = (gpd
+                 .sjoin(coords,
+                        gdf[["Buurt", "geometry"]],
+                        how="inner",
+                        op='intersects')
+                 .drop(columns=["geometry", "index_right"])
+                 .sort_index())
+    geo_combi.head()
+
+    # Merge with original dataframe
+    df = (df.merge(geo_combi,
+                   left_index=True,
+                   right_index=True)
+          .drop(columns=["address_y"]))
+
+    # Clean neighborhood names
+    df["Buurt"] = (df["Buurt"]
+                   .str.replace(" ", "_")
+                   .str.replace(".", "")
+                   .str.lower())
+
+    # Get dummies for neighborhood
+    df = pd.get_dummies(df,
+                        columns=["Buurt"],
+                        prefix="ne")
+
+    return df
