@@ -1,3 +1,5 @@
+# (c) 2020 Rinze Douma
+
 import pandas as pd
 import numpy as np
 
