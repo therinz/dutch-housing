@@ -13,25 +13,32 @@ from getpass import getpass
 importlib.import_module("helpers")
 from helpers import convert_elapsed_time, extract_num, build_era
 from helpers import listing_type, roof_description, create_dummy
-from helpers import garden
+from helpers import garden, validate_input
+
+# Globals
+BASE = os.path.join(os.pardir, "data")
 
 
 def clean_dataset(filename):
     """Open, clean and save a Funda dataset."""
 
     # Open JSON file
-    df = pd.read_json(os.path.join(os.pardir, "data", filename))
+    try:
+        df = pd.read_json(os.path.join(BASE, filename))
+    except FileNotFoundError:
+        print("File not found.")
+        return
 
     # Rename columns
-    rename_cols(df)
+    df = rename_cols(df)
     # Drop irrelevant cols & rows
-    initial_drop(df)
+    df = initial_drop(df)
     # Extract numeric data
-    convert_num_cols(df)
+    df = convert_num_cols(df)
     # Process binary information
-    binary_columns(df)
+    df = binary_columns(df)
     # Convert categorical data to dummy columns
-    dummy_columns(df)
+    df = dummy_columns(df)
 
     # Drop columns that are not significant
     df.drop(columns=[
@@ -42,10 +49,13 @@ def clean_dataset(filename):
     ], inplace=True)
 
     # Get coordinates and bin into neighborhoods
-    geolocation(df, getpass())
+    print("Please provide Google Maps API key:")
+    df = geolocation(df, getpass())
 
     # Export to pickle file
-    df.to_pickle("../data/intermediate.pkl")
+    path = os.path.join(BASE, filename.rsplit(".")[0] + ".pkl")
+    df.to_pickle(path)
+    print(f"Successfully exported to '{path}'.")
 
 
 def rename_cols(df):
@@ -147,18 +157,46 @@ def rename_cols(df):
 def initial_drop(df):
     """Drop data which is not relevant."""
 
+    # Make sure the columns we use are also in this dataset
+    all_cols = [
+        'address', 'postcode', 'city', 'asking_price', 'price_m2',
+        'days_online', 'status', 'acceptance', 'service_fees_pm',
+        'vve_contribution', 'asking_price_original', 'rent_price',
+        'rental_agreement', 'rent_price_original', 'sale_type', 'property_type',
+        'new_build', 'build_year', 'roof_type', 'specials', 'certificates',
+        'apartment_type', 'build_era', 'accessibility', 'prop_extra_type',
+        'parking_type', 'prop_build_area', 'opp', 'property_m2', 'property_m3',
+        'num_rooms', 'bathrooms', 'bathroom_features', 'floors', 'features',
+        'apartment_level', 'parking_capacity', 'prop_extra_dimensions',
+        'ground_area', 'energy_label', 'isolation', 'heating', 'hot_water',
+        'boiler', 'energy_label_temp', 'garden', 'balcony', 'environment',
+        'garden_front', 'garden_orientation', 'terrace', 'garden_back',
+        'garden_patio', 'garden_plaats', 'garden_side', 'garage_type',
+        'garage_size', 'garage_features', 'garage_isolation', 'storage_type',
+        'storage_features', 'storage_isolation', 'parking', 'vve_kvk', 'vve_am',
+        'vve_per_contr', 'vve_reserve_fund', 'vve_maintenance', 'vve_insurance',
+        'kadaster', 'comp_practice', 'company_space', 'office_space',
+        'store_space', 'auction_price', 'auction_period', 'auction_type',
+        'auction_party'
+    ]
+    # Add any columns not yet present
+    add = [col for col in all_cols if col not in df.columns]
+    df = pd.concat([df, pd.DataFrame(columns=add)], axis=1)
+
+    # Drop extra columns present in this dataframe
+    extra = [col for col in df.columns if col not in all_cols]
+
     # Initial drop of columns with little meaning
     drop = ['status', 'acceptance', 'asking_price_original', 'rent_price',
             'rental_agreement', 'rent_price_original', 'sale_type',
-            'certificates',
-            'accessibility', 'prop_extra_type', 'parking_type',
-            'prop_build_area',
-            'opp', 'parking_capacity', 'prop_extra_dimensions', 'ground_area',
-            'garden_plaats', 'garden_side', 'garage_size', 'garage_features',
-            'garage_isolation', 'kadaster', 'comp_practice', 'company_space',
-            'office_space', 'store_space', 'auction_price', 'auction_period',
-            'auction_type', 'auction_party']
-    df.drop(columns=drop, inplace=True)
+            'certificates', 'accessibility', 'prop_extra_type', 'parking_type',
+            'prop_build_area', 'opp', 'parking_capacity',
+            'prop_extra_dimensions', 'ground_area', 'garden_plaats',
+            'garden_side', 'garage_size', 'garage_features', 'garage_isolation',
+            'kadaster', 'comp_practice', 'company_space', 'office_space',
+            'store_space', 'auction_price', 'auction_period', 'auction_type',
+            'auction_party']
+    df.drop(columns=drop+extra, inplace=True)
 
     # Drop rows without asking price
     df.dropna(subset=["asking_price"], inplace=True)
@@ -248,7 +286,7 @@ def binary_columns(df):
 
     # VVE column which includes digits
     df["vve_per_contr"] = np.where(
-        df["vve_per_contr"].str.contains("ja", case=False),
+        df["vve_per_contr"].astype(str).str.contains("ja", case=False),
         1,
         0
     )
@@ -358,7 +396,7 @@ def geolocation(df, key):
     coords.to_crs(epsg=4326, inplace=True)
 
     # Load neighborhoods of Amsterdam
-    gdf = gpd.read_file("../data/ams_neighborhoods.shp")
+    gdf = gpd.read_file(os.path.join(BASE, "geo", "ams_neighborhoods.shp"))
 
     # Add the neighborhood for every location
     geo_combi = (gpd
@@ -388,3 +426,9 @@ def geolocation(df, key):
                         prefix="ne")
 
     return df
+
+
+if __name__ == '__main__':
+    prompt = "Please provide filename of .json in data folder: "
+    f_name = validate_input(prompt, type_=str, min_=5)
+    clean_dataset(f_name)
