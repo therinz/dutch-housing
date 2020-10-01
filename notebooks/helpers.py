@@ -1,10 +1,5 @@
-import requests
-import urllib.parse
-
 import pandas as pd
 import numpy as np
-
-from getpass import getpass
 
 
 def convert_elapsed_time(x):
@@ -32,7 +27,8 @@ def extract_num(col, mode):
            "bedrooms": r"(\d+)(?: slaapkamer)",
            "floors": r"(\d+)(?: woonla)",
            "bathrooms": r"(\d+)(?: badk)",
-           "toilets": r"(\d+)(?: apart)"}
+           "toilets": r"(\d+)(?: apart)",
+           "app_level": r"(\d+)(?:e woonl)"}
 
     return pd.to_numeric(col.astype(str)
                          .str.extract(pat[mode], expand=False)
@@ -97,11 +93,10 @@ def listing_type(df):
     # Many tags mean the same, so we combine them under a single header
     combine = {'2-onder-1-kapwoning': ['geschakelde_2-onder-1-kapwoning',
                                        'halfvrijstaande_woning'],
-               'bovenwoning': ['appartement_met_open_portiek',
-                               'dubbel_bovenhuis',
+               'bovenwoning': ['dubbel_bovenhuis',
                                'dubbel_bovenhuis_met_open_portiek',
                                'maisonnette', 'tussenverdieping',
-                               'bovenwoning', 'beneden_+_bovenwoning'],
+                               'beneden_+_bovenwoning'],
                'benedenwoning': ['dubbel_benedenhuis', 'bel-etage',
                                  'souterrain'],
                'hoekwoning': ['eindwoning'],
@@ -110,7 +105,8 @@ def listing_type(df):
                'landhuis': ['landgoed', 'woonboerderij'],
                'bungalow': ['semi-bungalow'],
                'eengezinswoning': ['patiowoning', 'dijkwoning',
-                                   'split-level_woning', 'kwadrant_woning'],
+                                   'split-level_woning', 'kwadrant_woning',
+                                   'hofjeswoning'],
                'herenhuis': ['grachtenpand'],
                'corridorflat': ['galerijflat'],
                'villa': ['vrijstaande_woning'],
@@ -119,6 +115,8 @@ def listing_type(df):
     for key, elem in combine.items():
         key = pref(key, "pt")
         elem = [pref(e, "pt") for e in elem]
+
+        # If any of the key+elem is 1, set the key to 1
         df[key] = np.where(df[[key] + elem].apply(any, axis=1)
                            , 1, 0)
 
@@ -128,6 +126,8 @@ def listing_type(df):
             for col in lst]
     useless = [pref("service_flat", "pt"),
                pref("bedrijfs-_of_dienstwoning", "pt"),
+               "pt_appartement_met_open_portiek",
+               "pt_appartement",
                "apartment_type",
                "property_type"]
     df.drop(columns=drop+useless, inplace=True)
@@ -154,4 +154,14 @@ def roof_description(col):
     return dummies
 
 
+def garden(x):
+    orientations = ["noord", "zuid", "west", "oost"]
+
+    for direction in orientations:
+        try:
+            if direction in x:
+                return direction
+        except TypeError:
+            return pd.NA
+    return pd.NA
 
