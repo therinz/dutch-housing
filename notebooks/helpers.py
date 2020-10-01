@@ -30,13 +30,21 @@ def extract_num(col, mode):
            "year": r"(\d+)",
            "rooms": r"(\d+)(?: kamer)",
            "bedrooms": r"(\d+)(?: slaapkamer)",
-           "floors": r"(\d+)(?: woonla)"}
+           "floors": r"(\d+)(?: woonla)",
+           "bathrooms": r"(\d+)(?: badk)",
+           "toilets": r"(\d+)(?: apart)"}
 
     return pd.to_numeric(col.astype(str)
                          .str.extract(pat[mode], expand=False)
                          .str.replace(".", "")
                          .str.replace(",", ".")
                          .fillna(0))
+
+
+def create_dummy(col, pattern):
+    """Return 1 if col contains pattern, else 0."""
+
+    return np.where(col.str.contains(pattern, case=False, na=False), 1, 0)
 
 
 def build_era(x):
@@ -61,7 +69,6 @@ def listing_type(df):
     df["property_type"] = np.where(df["property_type"].notna(),
                                    df["property_type"],
                                    df["apartment_type"])
-    df.drop(columns=["apartment_type"], inplace=True)
 
     # Flatten parentheses to a comma separated value and split on comma
     tags = (df["property_type"]
@@ -90,11 +97,13 @@ def listing_type(df):
     # Many tags mean the same, so we combine them under a single header
     combine = {'2-onder-1-kapwoning': ['geschakelde_2-onder-1-kapwoning',
                                        'halfvrijstaande_woning'],
-               'appartement': ['appartement_met_open_portiek',
+               'bovenwoning': ['appartement_met_open_portiek',
                                'dubbel_bovenhuis',
                                'dubbel_bovenhuis_met_open_portiek',
                                'maisonnette', 'tussenverdieping',
                                'bovenwoning', 'beneden_+_bovenwoning'],
+               'benedenwoning': ['dubbel_benedenhuis', 'bel-etage',
+                                 'souterrain'],
                'hoekwoning': ['eindwoning'],
                'waterwoning': ['woonboot'],
                'portiekwoning': ['open_portiek', 'portiekflat'],
@@ -102,8 +111,6 @@ def listing_type(df):
                'bungalow': ['semi-bungalow'],
                'eengezinswoning': ['patiowoning', 'dijkwoning',
                                    'split-level_woning', 'kwadrant_woning'],
-               'benedenwoning': ['dubbel_benedenhuis', 'bel-etage',
-                                 'souterrain'],
                'herenhuis': ['grachtenpand'],
                'corridorflat': ['galerijflat'],
                'villa': ['vrijstaande_woning'],
@@ -120,7 +127,9 @@ def listing_type(df):
             for lst in combine.values()
             for col in lst]
     useless = [pref("service_flat", "pt"),
-               pref("bedrijfs-_of_dienstwoning", "pt")]
+               pref("bedrijfs-_of_dienstwoning", "pt"),
+               "apartment_type",
+               "property_type"]
     df.drop(columns=drop+useless, inplace=True)
 
 
@@ -145,23 +154,4 @@ def roof_description(col):
     return dummies
 
 
-def create_dummy(col, pattern):
-    """Return 1 if col contains pattern, else 0."""
-
-    return np.where(col.str.contains(pattern, case=False, na=False), 1, 0)
-
-
-def get_coords(address, key):
-    """Return coordinates based on address and postcode."""
-
-    # Build request URL
-    url = f"https://maps.googleapis.com/maps/api/geocode/json?key={key}&address="
-    name = urllib.parse.quote_plus(address.encode('utf-8'))
-    resp = requests.get(url + name)
-    r = resp.json()
-
-    # If something went wrong we want to return a 0,0 tuple.
-    if resp.status_code != 200 or not r["results"]:
-        return 0, 0
-    return tuple([val for val in r["results"][0]["geometry"]["location"].values()])
 
