@@ -392,7 +392,8 @@ def geolocation(df, key):
     df.dropna(subset=["address"], inplace=True)
 
     # Make the full address into one column
-    df = (df.assign(full_address=df[["address", "postcode", "city"]].agg(", ".join, axis=1))
+    df = (df.assign(full_address=df[["address", "postcode", "city"]]
+                    .agg(", ".join, axis=1))
           .drop(columns=["address", "postcode", "city"]))
 
     # Rename address column and bring to front
