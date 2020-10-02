@@ -3,7 +3,6 @@
 import os
 
 import pandas as pd
-
 from sklearn.model_selection import train_test_split as tts
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import accuracy_score
@@ -22,9 +21,9 @@ def modelling(filename):
     df = pd.read_pickle(os.path.join(BASE, filename))
 
     # Temp solution for incorrect column names
-    df.rename(columns={"rf_plat dak": "rf_plat_dak",
-                       "address_x": "address"},
-              inplace=True)
+    df = (df.rename(columns={"rf_plat dak": "rf_plat_dak",
+                       "address_x": "address"})
+          .reset_index(drop=True))
     X_train, X_test, y_train, y_test = split_dataset(df)
 
     # Scale X

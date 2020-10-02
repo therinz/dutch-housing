@@ -21,11 +21,17 @@ A tool to predict the asking price of Dutch real estate
 ***
 
 ## Issues
+- make the scraper work
+- import module
+- determining what factors to use
 
 
 ## Assumptions
-- geen uitpond, huurwoningen
+data ignored:
+- geen uitpond huurwoningen
 - no certificates considered
+
+
 
 ## Organization
 
