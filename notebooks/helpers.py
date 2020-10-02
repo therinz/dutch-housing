@@ -40,10 +40,16 @@ def extract_num(col, mode):
                          .fillna(0))
 
 
-def create_dummy(col, pattern):
+def contains_to_binary(col, pattern, regex=False):
     """Return 1 if col contains pattern, else 0."""
 
-    return np.where(col.str.contains(pattern, case=False, na=False), 1, 0)
+    return np.where(col
+                    .astype(str)
+                    .str.contains(pattern,
+                                  case=False,
+                                  regex=regex,
+                                  na=False),
+                    1, 0)
 
 
 def build_era(x):
@@ -82,7 +88,7 @@ def listing_type(df):
 
     # Evaluate whether tag applicable
     for tag in all_tags:
-        df[tag] = create_dummy(df["property_type"], tag)
+        df[tag] = contains_to_binary(df["property_type"], tag)
 
     # Many tags mean the same, so we combine them under a single header
     combine = {'2-onder-1-kapwoning': ['geschakelde_2-onder-1-kapwoning',
@@ -144,9 +150,10 @@ def roof_description(col):
 
     # Create dummy column for each value
     for pat in roof_form:
-        dummies[f"rf_{pat}"] = create_dummy(col, pat)
+        dummies[f"rf_{pat}"] = contains_to_binary(col, pat)
     for pat in roof_type:
-        dummies[f"rt_{pat}"] = create_dummy(col, pat)
+        dummies[f"rt_{pat}"] = contains_to_binary(col, pat)
+        dummies.rename(columns={"rf_plat dak": "rf_plat_dak"})
 
     return dummies
 

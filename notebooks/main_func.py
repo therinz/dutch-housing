@@ -11,8 +11,8 @@ from getpass import getpass
 
 importlib.import_module("helpers")
 from helpers import convert_elapsed_time, extract_num, build_era    # noqa
-from helpers import listing_type, roof_description, create_dummy    # noqa
-from helpers import garden, validate_input                          # noqa
+from helpers import listing_type, roof_description                  # noqa
+from helpers import garden, validate_input, contains_to_binary      # noqa
 
 # Globals
 BASE = os.path.join(os.pardir, "data")
@@ -284,25 +284,16 @@ def binary_columns(df):
     print("Setting binary columns...")
 
     # VVE columns
-    vve = ["vve_kvk", "vve_am", "vve_reserve_fund",
+    vve = ["vve_per_contr", "vve_kvk", "vve_am", "vve_reserve_fund",
            "vve_maintenance", "vve_insurance"]
 
     # Fill NaN with 0
-    df[["vve_per_contr"] + vve] = (df[["vve_per_contr"] + vve].fillna(0))
+    df[vve] = df[vve].fillna(0)
     for col in vve:
-        df[col] = np.where(df[col] == "Ja", 1, 0)
-
-    # VVE column which includes digits
-    df["vve_per_contr"] = np.where(
-        df["vve_per_contr"].astype(str).str.contains("ja", case=False),
-        1,
-        0
-    )
+        df[col] = contains_to_binary(df[col], "ja")
 
     # Other binary oppositions
-    df["new_build"] = np.where(df["new_build"] == "Nieuwbouw",
-                               1,
-                               0)
+    df["new_build"] = contains_to_binary(df["new_build"], "nieuwbouw")
 
     # Consider subtypes equal and set each category to 1 if available
     other_binary = ["balcony", "garden", "storage_type"]
@@ -311,11 +302,7 @@ def binary_columns(df):
 
     # Any on-street parking is considered 0
     pattern = r"openbaar|betaald|vergunning"
-    df["parking"] = np.where(
-        df["parking"].str.contains(pattern, case=False, regex=True, na=True),
-        0,
-        1
-    )
+    df["parking"] = contains_to_binary(df["parking"], pattern, regex=True)
 
     return df
 
@@ -336,7 +323,7 @@ def dummy_columns(df):
     # Attic and cellar
     pats = {"attic": "zolder|vliering", "cellar": "kelder"}
     for key, pat in pats.items():
-        df["xf_" + key] = create_dummy(df["floors"], pat)
+        df["xf_" + key] = contains_to_binary(df["floors"], pat)
 
     # Since we have split the listing type into categories,
     # we can split for either apartments or full houses
@@ -424,7 +411,8 @@ def geolocation(df, key):
     df = (df.merge(geo_combi,
                    left_index=True,
                    right_index=True)
-          .drop(columns=["address_y"]))
+          .drop(columns=["address_y"])
+          .rename(columns={"address_x": "address"}))
 
     # Clean neighborhood names
     df["Buurt"] = (df["Buurt"]
