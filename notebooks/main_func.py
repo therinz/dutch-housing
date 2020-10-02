@@ -7,13 +7,12 @@ import importlib
 import pandas as pd
 import numpy as np
 import geopandas as gpd
-import geopy
 from getpass import getpass
 
 importlib.import_module("helpers")
-from helpers import convert_elapsed_time, extract_num, build_era
-from helpers import listing_type, roof_description, create_dummy
-from helpers import garden, validate_input
+from helpers import convert_elapsed_time, extract_num, build_era    # noqa
+from helpers import listing_type, roof_description, create_dummy    # noqa
+from helpers import garden, validate_input                          # noqa
 
 # Globals
 BASE = os.path.join(os.pardir, "data")
@@ -59,6 +58,9 @@ def clean_dataset(filename):
 
 
 def rename_cols(df):
+    """Translate and reorder columns."""
+
+    print("Renaming columns...")
 
     # Set categories order
     col_trans = ["OVE", "BOU", "OPP", "IND", "ENE", "BUI", "GAR",
@@ -157,6 +159,8 @@ def rename_cols(df):
 def initial_drop(df):
     """Drop data which is not relevant."""
 
+    print("Dropping irrelevant cols & rows...")
+
     # Make sure the columns we use are also in this dataset
     all_cols = [
         'address', 'postcode', 'city', 'asking_price', 'price_m2',
@@ -221,6 +225,8 @@ def initial_drop(df):
 def convert_num_cols(df):
     """Extract numeric values from columns."""
 
+    print("Extracting numeric information...")
+
     # Columns in euro
     euro = ["asking_price", "vve_contribution",
             "service_fees_pm", "price_m2"]
@@ -275,6 +281,8 @@ def convert_num_cols(df):
 def binary_columns(df):
     """When columns have essentially 2 values, set as either 1 or 0."""
 
+    print("Setting binary columns...")
+
     # VVE columns
     vve = ["vve_kvk", "vve_am", "vve_reserve_fund",
            "vve_maintenance", "vve_insurance"]
@@ -314,6 +322,8 @@ def binary_columns(df):
 
 def dummy_columns(df):
     """Create dummy columns for categorical columns."""
+
+    print("Create dummy columns for categorical columns")
 
     # Property and apartment types (prefix pt)
     listing_type(df)
@@ -375,13 +385,14 @@ def dummy_columns(df):
 def geolocation(df, key):
     """Bin listings into neighborhoods."""
 
+    print("Fetch coordinates and bin into neighborhoods")
+
     # Delete additions to house number and drop rows without house number
     df["address"] = df["address"].str.extract(r"(.+ \d+)", expand=False)
     df.dropna(subset=["address"], inplace=True)
 
     # Make the full address into one column
-    df = (df.assign(full_address=
-                    df[["address", "postcode", "city"]].agg(", ".join, axis=1))
+    df = (df.assign(full_address=df[["address", "postcode", "city"]].agg(", ".join, axis=1))
           .drop(columns=["address", "postcode", "city"]))
 
     # Rename address column and bring to front
