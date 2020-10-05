@@ -20,7 +20,7 @@ class MachineLearnModel:
         self.X_train = self.X_test = self.y_train = self.y_test = pd.DataFrame
 
         # Open file
-        self.df = pd.read_pickle(os.path.join(DataFrameModel.BASE, filename))
+        self.df = pd.read_pickle(os.path.join(BASE, filename))
 
         # Temp solution for incorrect column names
         self.df = (self.df.rename(columns={"rf_plat dak": "rf_plat_dak",
@@ -40,11 +40,12 @@ class MachineLearnModel:
         # distractors = ["vve_kvk", "vve_am", "vve_per_contr",
         #               "vve_reserve_fund", "rt_pannen", "rf_plat_dak",
         #               "address", "price_m2"]
+        distractors = ["asking_price", "address", "price_m2", "geometry"]
 
         # Set variables
         X = self.df[[col
                      for col in self.df.columns
-                     if col not in ["asking_price", "address", "price_m2"]]]
+                     if col not in distractors]]
         y = self.df["asking_price"]
 
         (self.X_train, self.X_test,

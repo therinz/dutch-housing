@@ -6,7 +6,7 @@ class FundaSpider(scrapy.Spider):
     name = "funda"
     start_urls = ["https://www.funda.nl/koop/amsterdam/"]
     allowed_domains = ["funda.nl"]
-    custom_settings = {'DEPTH_LIMIT': 1}
+    custom_settings = {'DEPTH_LIMIT': 300}
 
     def __init__(self, state="", city="Amsterdam", *args, **kwargs):
         super(FundaSpider, self).__init__(*args, **kwargs)

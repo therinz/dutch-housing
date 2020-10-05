@@ -61,7 +61,7 @@ def clean_dataset(filename):
 def rename_cols(df):
     """Translate and reorder columns."""
 
-    print("Renaming columns...")
+    print("Rename columns...")
 
     # Set categories order
     col_trans = ["OVE", "BOU", "OPP", "OTH", "IND", "ENE", "BUI", "GAR",
@@ -85,7 +85,7 @@ def rename_cols(df):
 def initial_drop(df):
     """Drop data which is not relevant."""
 
-    print("Dropping irrelevant cols & rows...")
+    print("Drop irrelevant cols & rows...")
 
     # Make sure the columns we use are also in this dataset
     add = [col for col in TRANSLATE_COLS.values() if col not in df.columns]
@@ -133,7 +133,7 @@ def initial_drop(df):
 def convert_num_cols(df):
     """Extract numeric values from columns."""
 
-    print("Extracting numeric information...")
+    print("Extract numeric information...")
 
     # Columns in euro
     euro = ["asking_price", "vve_contribution",
@@ -190,7 +190,7 @@ def convert_num_cols(df):
 def binary_columns(df):
     """When columns have essentially 2 values, set as either 1 or 0."""
 
-    print("Setting binary columns...")
+    print("Set binary columns...")
 
     # VVE columns
     vve = ["vve_per_contr", "vve_kvk", "vve_am", "vve_reserve_fund",
@@ -313,9 +313,8 @@ def geolocation(df, key):
                         gdf[["Buurt", "geometry"]],
                         how="inner",
                         op='intersects')
-                 .drop(columns=["geometry", "index_right"])
+                 .drop(columns=["index_right"])
                  .sort_index())
-    geo_combi.head()
 
     # Merge with original dataframe
     df = (df.merge(geo_combi,
@@ -342,9 +341,8 @@ def combine_df(f1, f2, output=None):
     """Combine 2 dataframes in one and save as new pickle."""
 
     # Open files
-    dataframes = []
-    for filename in [f1, f2]:
-        dataframes = pd.read_pickle(os.path.join(BASE, filename))
+    dataframes = [pd.read_pickle(os.path.join(BASE, filename))
+                  for filename in [f1, f2]]
 
     # Combine
     df = pd.concat(dataframes).fillna(0).reset_index(drop=True)
@@ -352,7 +350,9 @@ def combine_df(f1, f2, output=None):
     # Export
     if not output:
         output = "combination.pkl"
-    df.to_pickle(os.path.join(BASE, output))
+    path = os.path.join(BASE, output)
+    df.to_pickle(path)
+    print(f"Successfully exported as {path}.")
 
 
 # Translate column names
