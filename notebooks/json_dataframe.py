@@ -1,13 +1,13 @@
 # (c) 2020 Rinze Douma
 
+import importlib
 # Import libraries
 import os
-import importlib
-
-import pandas as pd
-import numpy as np
-import geopandas as gpd
 from getpass import getpass
+
+import geopandas as gpd
+import numpy as np
+import pandas as pd
 
 importlib.import_module("helpers")
 from helpers import convert_elapsed_time, extract_num, build_era    # noqa
@@ -44,7 +44,8 @@ def clean_dataset(filename):
         'specials', 'bathroom_features', 'features',
         'isolation', 'heating', 'hot_water', 'boiler',
         'environment', 'garden_front', 'terrace', 'garden_back',
-        'garden_patio', 'garage_type', 'storage_features', 'storage_isolation'
+        'garden_patio', 'garage_type', 'storage_features', 'storage_isolation',
+        'outdoor_m2', 'surface_m2', 'ownership'
     ], inplace=True)
 
     # Get coordinates and bin into neighborhoods
@@ -63,7 +64,7 @@ def rename_cols(df):
     print("Renaming columns...")
 
     # Set categories order
-    col_trans = ["OVE", "BOU", "OPP", "IND", "ENE", "BUI", "GAR",
+    col_trans = ["OVE", "BOU", "OPP", "OTH", "IND", "ENE", "BUI", "GAR",
                  "BER", "PAR", "VVE", "KAD", "BED", "VEI"]
 
     # Build list of column names incl category label
@@ -73,85 +74,10 @@ def rename_cols(df):
              if x.startswith(col_trans[i])]
 
     # Execute order
-    df = df[["address", "postcode", "city"] + order]
+    df = df[["address", "postcode", "city"] + order].copy()
 
     # Translate column names
-    cols = {'OVE-Vraagprijs': 'asking_price',
-            'OVE-Vraagprijs per m²': 'price_m2',
-            'OVE-Aangeboden sinds': 'days_online',
-            'OVE-Status': 'status',
-            'OVE-Aanvaarding': 'acceptance',
-            'BOU-Soort woonhuis': 'property_type',
-            'BOU-Soort bouw': 'new_build',
-            'BOU-Bouwjaar': 'build_year',
-            'BOU-Soort dak': 'roof_type',
-            'OPP-': 'opp',
-            'OPP-Perceel': 'property_m2',
-            'OPP-Inhoud': 'property_m3',
-            'IND-Aantal kamers': 'num_rooms',
-            'IND-Aantal badkamers': 'bathrooms',
-            'IND-Badkamervoorzieningen': 'bathroom_features',
-            'IND-Aantal woonlagen': 'floors',
-            'IND-Voorzieningen': 'features',
-            'ENE-Energielabel': 'energy_label',
-            'ENE-Isolatie': 'isolation',
-            'ENE-Verwarming': 'heating',
-            'ENE-Warm water': 'hot_water',
-            'ENE-Cv-ketel': 'boiler',
-            'KAD-': 'kadaster',
-            'BUI-Tuin': 'garden',
-            'BUI-Balkon/dakterras': 'balcony',
-            'GAR-Soort garage': 'garage_type',
-            'GAR-Capaciteit': 'garage_size',
-            'GAR-Voorzieningen': 'garage_features',
-            'PAR-Soort parkeergelegenheid': 'parking',
-            'BUI-Ligging': 'environment',
-            'BUI-Voortuin': 'garden_front',
-            'BUI-Ligging tuin': 'garden_orientation',
-            'OVE-Servicekosten': 'service_fees_pm',
-            'BOU-Specifiek': 'specials',
-            'BUI-Zonneterras': 'terrace',
-            'BER-Schuur/berging': 'storage_type',
-            'BER-Voorzieningen': 'storage_features',
-            'BUI-Achtertuin': 'garden_back',
-            'BER-Isolatie': 'storage_isolation',
-            'BOU-Keurmerken': 'certificates',
-            'BUI-Patio/atrium': 'garden_patio',
-            'OVE-Bijdrage VvE': 'vve_contribution',
-            'BOU-Soort appartement': 'apartment_type',
-            'BOU-Bouwperiode': 'build_era',
-            'IND-Gelegen op': 'apartment_level',
-            'VVE-Inschrijving KvK': 'vve_kvk',
-            'VVE-Jaarlijkse vergadering': 'vve_am',
-            'VVE-Periodieke bijdrage': 'vve_per_contr',
-            'VVE-Reservefonds aanwezig': 'vve_reserve_fund',
-            'VVE-Onderhoudsplan': 'vve_maintenance',
-            'VVE-Opstalverzekering': 'vve_insurance',
-            'GAR-Isolatie': 'garage_isolation',
-            'BOU-Toegankelijkheid': 'accessibility',
-            'OVE-Oorspronkelijke vraagprijs': 'asking_price_original',
-            'ENE-Voorlopig energielabel': 'energy_label_temp',
-            'OVE-Huurprijs': 'rent_price',
-            'OVE-Huurovereenkomst': 'rental_agreement',
-            'BUI-Plaats': 'garden_plaats',
-            'BUI-Zijtuin': 'garden_side',
-            'OVE-Oorspronkelijke huurprijs': 'rent_price_original',
-            'BOU-Soort overig aanbod': 'prop_extra_type',
-            'BED-Praktijkruimte': 'comp_practice',
-            'OVE-Koopmengvorm': 'sale_type',
-            'BOU-Soort parkeergelegenheid': 'parking_type',
-            'IND-Capaciteit': 'parking_capacity',
-            'IND-Afmetingen': 'prop_extra_dimensions',
-            'VEI-Prijs': 'auction_price',
-            'VEI-Veilingperiode': 'auction_period',
-            'VEI-Soort veiling': 'auction_type',
-            'VEI-Veilingpartij': 'auction_party',
-            'BED-Bedrijfsruimte': 'company_space',
-            'BED-Kantoorruimte': 'office_space',
-            'BED-Winkelruimte': 'store_space',
-            'IND-Perceel': 'ground_area',
-            'BOU-Soort object': 'prop_build_area'}
-    df.rename(cols, axis=1, inplace=True)
+    df.rename(columns=TRANSLATE_COLS, inplace=True)
 
     return df
 
@@ -162,33 +88,14 @@ def initial_drop(df):
     print("Dropping irrelevant cols & rows...")
 
     # Make sure the columns we use are also in this dataset
-    all_cols = [
-        'address', 'postcode', 'city', 'asking_price', 'price_m2',
-        'days_online', 'status', 'acceptance', 'service_fees_pm',
-        'vve_contribution', 'asking_price_original', 'rent_price',
-        'rental_agreement', 'rent_price_original', 'sale_type', 'property_type',
-        'new_build', 'build_year', 'roof_type', 'specials', 'certificates',
-        'apartment_type', 'build_era', 'accessibility', 'prop_extra_type',
-        'parking_type', 'prop_build_area', 'opp', 'property_m2', 'property_m3',
-        'num_rooms', 'bathrooms', 'bathroom_features', 'floors', 'features',
-        'apartment_level', 'parking_capacity', 'prop_extra_dimensions',
-        'ground_area', 'energy_label', 'isolation', 'heating', 'hot_water',
-        'boiler', 'energy_label_temp', 'garden', 'balcony', 'environment',
-        'garden_front', 'garden_orientation', 'terrace', 'garden_back',
-        'garden_patio', 'garden_plaats', 'garden_side', 'garage_type',
-        'garage_size', 'garage_features', 'garage_isolation', 'storage_type',
-        'storage_features', 'storage_isolation', 'parking', 'vve_kvk', 'vve_am',
-        'vve_per_contr', 'vve_reserve_fund', 'vve_maintenance', 'vve_insurance',
-        'kadaster', 'comp_practice', 'company_space', 'office_space',
-        'store_space', 'auction_price', 'auction_period', 'auction_type',
-        'auction_party'
-    ]
-    # Add any columns not yet present
-    add = [col for col in all_cols if col not in df.columns]
+    add = [col for col in TRANSLATE_COLS.values() if col not in df.columns]
     df = pd.concat([df, pd.DataFrame(columns=add)], axis=1)
 
     # Drop extra columns present in this dataframe
-    extra = [col for col in df.columns if col not in all_cols]
+    address = ["address", "postcode", "city"]
+    extra = [col
+             for col in df.columns
+             if col not in list(TRANSLATE_COLS.values()) + address]
 
     # Initial drop of columns with little meaning
     drop = ['status', 'acceptance', 'asking_price_original', 'rent_price',
@@ -199,7 +106,8 @@ def initial_drop(df):
             'garden_side', 'garage_size', 'garage_features', 'garage_isolation',
             'kadaster', 'comp_practice', 'company_space', 'office_space',
             'store_space', 'auction_price', 'auction_period', 'auction_type',
-            'auction_party']
+            'auction_party', "external_storage", "other_space",
+            "ownership_costs"]
     df.drop(columns=drop+extra, inplace=True)
 
     # Drop rows without asking price
@@ -253,7 +161,8 @@ def convert_num_cols(df):
           .assign(build_year=extract_num(df["build_year"], "year"),
                   num_bathrooms=extract_num(df["bathrooms"], "bathrooms"),
                   num_toilets=extract_num(df["bathrooms"], "toilets"),
-                  property_m2=extract_num(df["property_m2"], "meter"),
+                  living_m2=extract_num(df["living_m2"], "meter"),
+                  land_m2=extract_num(df["land_m2"], "meter"),
                   property_m3=extract_num(df["property_m3"], "meter"))
           .drop(columns="bathrooms"))
 
@@ -294,6 +203,7 @@ def binary_columns(df):
 
     # Other binary oppositions
     df["new_build"] = contains_to_binary(df["new_build"], "nieuwbouw")
+    df["ownership"] = contains_to_binary(df["ownership"], "erfpacht")
 
     # Consider subtypes equal and set each category to 1 if available
     other_binary = ["balcony", "garden", "storage_type"]
@@ -310,7 +220,7 @@ def binary_columns(df):
 def dummy_columns(df):
     """Create dummy columns for categorical columns."""
 
-    print("Create dummy columns for categorical columns")
+    print("Create dummy columns for categorical columns...")
 
     # Property and apartment types (prefix pt)
     listing_type(df)
@@ -372,7 +282,7 @@ def dummy_columns(df):
 def geolocation(df, key):
     """Bin listings into neighborhoods."""
 
-    print("Fetch coordinates and bin into neighborhoods")
+    print("Fetch coordinates and bin into neighborhoods...")
 
     # Delete additions to house number and drop rows without house number
     df["address"] = df["address"].str.extract(r"(.+ \d+)", expand=False)
@@ -427,6 +337,108 @@ def geolocation(df, key):
 
     return df
 
+
+def combine_df(f1, f2, output=None):
+    """Combine 2 dataframes in one and save as new pickle."""
+
+    # Open files
+    dataframes = []
+    for filename in [f1, f2]:
+        dataframes = pd.read_pickle(os.path.join(BASE, filename))
+
+    # Combine
+    df = pd.concat(dataframes).fillna(0).reset_index(drop=True)
+
+    # Export
+    if not output:
+        output = "combination.pkl"
+    df.to_pickle(os.path.join(BASE, output))
+
+
+# Translate column names
+TRANSLATE_COLS = {'OVE-Vraagprijs': 'asking_price',
+                  'OVE-Vraagprijs per m²': 'price_m2',
+                  'OVE-Aangeboden sinds': 'days_online',
+                  'OVE-Status': 'status',
+                  'OVE-Aanvaarding': 'acceptance',
+                  'BOU-Soort woonhuis': 'property_type',
+                  'BOU-Soort bouw': 'new_build',
+                  'BOU-Bouwjaar': 'build_year',
+                  'BOU-Soort dak': 'roof_type',
+                  'OPP-': 'opp',
+                  'OPP-Perceel': 'land_m2',
+                  'OPP-Inhoud': 'property_m3',
+                  'IND-Aantal kamers': 'num_rooms',
+                  'IND-Aantal badkamers': 'bathrooms',
+                  'IND-Badkamervoorzieningen': 'bathroom_features',
+                  'IND-Aantal woonlagen': 'floors',
+                  'IND-Voorzieningen': 'features',
+                  'ENE-Energielabel': 'energy_label',
+                  'ENE-Isolatie': 'isolation',
+                  'ENE-Verwarming': 'heating',
+                  'ENE-Warm water': 'hot_water',
+                  'ENE-Cv-ketel': 'boiler',
+                  'KAD-': 'kadaster',
+                  'BUI-Tuin': 'garden',
+                  'BUI-Balkon/dakterras': 'balcony',
+                  'GAR-Soort garage': 'garage_type',
+                  'GAR-Capaciteit': 'garage_size',
+                  'GAR-Voorzieningen': 'garage_features',
+                  'PAR-Soort parkeergelegenheid': 'parking',
+                  'BUI-Ligging': 'environment',
+                  'BUI-Voortuin': 'garden_front',
+                  'BUI-Ligging tuin': 'garden_orientation',
+                  'OVE-Servicekosten': 'service_fees_pm',
+                  'BOU-Specifiek': 'specials',
+                  'BUI-Zonneterras': 'terrace',
+                  'BER-Schuur/berging': 'storage_type',
+                  'BER-Voorzieningen': 'storage_features',
+                  'BUI-Achtertuin': 'garden_back',
+                  'BER-Isolatie': 'storage_isolation',
+                  'BOU-Keurmerken': 'certificates',
+                  'BUI-Patio/atrium': 'garden_patio',
+                  'OVE-Bijdrage VvE': 'vve_contribution',
+                  'BOU-Soort appartement': 'apartment_type',
+                  'BOU-Bouwperiode': 'build_era',
+                  'IND-Gelegen op': 'apartment_level',
+                  'VVE-Inschrijving KvK': 'vve_kvk',
+                  'VVE-Jaarlijkse vergadering': 'vve_am',
+                  'VVE-Periodieke bijdrage': 'vve_per_contr',
+                  'VVE-Reservefonds aanwezig': 'vve_reserve_fund',
+                  'VVE-Onderhoudsplan': 'vve_maintenance',
+                  'VVE-Opstalverzekering': 'vve_insurance',
+                  'GAR-Isolatie': 'garage_isolation',
+                  'BOU-Toegankelijkheid': 'accessibility',
+                  'OVE-Oorspronkelijke vraagprijs': 'asking_price_original',
+                  'ENE-Voorlopig energielabel': 'energy_label_temp',
+                  'OVE-Huurprijs': 'rent_price',
+                  'OVE-Huurovereenkomst': 'rental_agreement',
+                  'BUI-Plaats': 'garden_plaats',
+                  'BUI-Zijtuin': 'garden_side',
+                  'OVE-Oorspronkelijke huurprijs': 'rent_price_original',
+                  'BOU-Soort overig aanbod': 'prop_extra_type',
+                  'BED-Praktijkruimte': 'comp_practice',
+                  'OVE-Koopmengvorm': 'sale_type',
+                  'BOU-Soort parkeergelegenheid': 'parking_type',
+                  'IND-Capaciteit': 'parking_capacity',
+                  'IND-Afmetingen': 'prop_extra_dimensions',
+                  'VEI-Prijs': 'auction_price',
+                  'VEI-Veilingperiode': 'auction_period',
+                  'VEI-Soort veiling': 'auction_type',
+                  'VEI-Veilingpartij': 'auction_party',
+                  'BED-Bedrijfsruimte': 'company_space',
+                  'BED-Kantoorruimte': 'office_space',
+                  'BED-Winkelruimte': 'store_space',
+                  'IND-Perceel': 'ground_area',
+                  'BOU-Soort object': 'prop_build_area',
+                  'OTH-Wonen': 'living_m2',
+                  'OTH-Gebouwgebonden buitenruimte': 'outdoor_m2',
+                  'OTH-Oppervlakte': 'surface_m2',
+                  'OTH-Eigendomssituatie': 'ownership',
+                  'OVE-Laatste vraagprijs': 'asking_price',
+                  'OTH-Externe bergruimte': "external_storage",
+                  'OTH-Overige inpandige ruimte': "other_space",
+                  'OTH-Lasten': "ownership_costs"}
 
 if __name__ == '__main__':
     prompt = "Please provide filename of .json in data folder: "

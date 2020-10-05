@@ -7,8 +7,26 @@ import numpy as np
 def convert_elapsed_time(x):
     """Return integer of days since listing online."""
 
-    parts = x.split()
+    translation = {"januari": "january",
+                   "februari": "february",
+                   "maart": "march",
+                   "april": "april",
+                   "mei": "may",
+                   "juni": "june",
+                   "juli": "july",
+                   "augustus": "august",
+                   "september": "september",
+                   "oktober": "october",
+                   "november": "november",
+                   "december": "december"}
+
+    try:
+        parts = x.split()
+    except AttributeError:
+        return x
+
     if len(parts) == 3:
+        x = "-" .join([parts[0], translation[parts[1].lower()], parts[2]])
         days = (pd.to_datetime("now") - pd.to_datetime(x)).days
     elif len(parts) == 2:
         time_units = {"weken": 7, "maanden": 40}
@@ -131,7 +149,7 @@ def listing_type(df):
     df.drop(columns=drop+old_cols, inplace=True)
 
     # Add a prefix and replace spaces
-    df.columns = [f"pt_col".replace(" ", "_")
+    df.columns = [f"pt_{col}".replace(" ", "_")
                   if col in all_tags
                   else col
                   for col in df.columns]

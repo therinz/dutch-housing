@@ -1,4 +1,5 @@
 import scrapy
+# import logging
 
 
 class FundaSpider(scrapy.Spider):
@@ -38,10 +39,13 @@ class FundaSpider(scrapy.Spider):
                 "city": " ".join(subtitle[2:])}
 
         # Build list of information blocks
-        dls = response.xpath("//dl[contains(@class, 'object-kenmerken-list')]")
-        info.update({k:v for dl in dls for k, v in value_block(dl).items()})
+        dls = response.xpath("//dl")
+        info.update({k: v
+                     for dl in dls
+                     for k, v in value_block(dl).items()})
 
         yield info
+
 
 def value_block(dl):
     """Return dictionary with field names & values."""
@@ -53,9 +57,13 @@ def value_block(dl):
     if (dts[0].xpath("string(./text())").get().strip(" \r\n")
             == "Aangeboden sinds"):
         header = "Verkoopgeschiedenis"
+
     # Listing characteristics block
     else:
-        header = dl.xpath("./preceding-sibling::h3/text()")[-1].get()
+        try:
+            header = dl.xpath("./preceding-sibling::h3/text()")[-1].get()
+        except IndexError:
+            header = "Other"
 
     # Dictionary with name: value preceded by header abbreviation
     q_dd = "./following-sibling::dd/text()"
@@ -70,10 +78,3 @@ def value_block(dl):
         dd[first_item] = dl.xpath("./dd/span/text()").get()[0]
 
     return dd
-
-# =======
-#response.xpath("//div[contains(class, 'object-statistics__item')]")/p/strong
-
-#response.css(".object-statistics__item")
-#response.xpath("//div::class").getall()
-#response.xpath("//p[@class='fd-m-none']")

@@ -12,7 +12,7 @@ from sklearn.ensemble import RandomForestClassifier
 from yellowbrick.regressor import ResidualsPlot, PredictionError
 
 
-class DataFrameModel:
+class MachineLearnModel:
     BASE = os.path.join(os.pardir, "data")
 
     def __init__(self, filename):
@@ -26,6 +26,8 @@ class DataFrameModel:
         self.df = (self.df.rename(columns={"rf_plat dak": "rf_plat_dak",
                                            "address_x": "address"})
                    .reset_index(drop=True))
+
+        # Split into X and y
         self.split_dataset()
 
         # Scale X
@@ -100,28 +102,3 @@ class DataFrameModel:
 
         print(f"Model achieved an mean absolute error of {acc:.3f}."
               f"\nR2 score is {r2:.3f}")
-
-
-"""
-def model_func(filename):
-    Open a file and run various models.
-
-    # Open file
-    df = pd.read_pickle(os.path.join(BASE, filename))
-
-    # Temp solution for incorrect column names
-    df = (df.rename(columns={"rf_plat dak": "rf_plat_dak",
-                             "address_x": "address"})
-          .reset_index(drop=True))
-    X_train, X_test, y_train, y_test = split_dataset(df)
-
-    # Scale X
-    X_train, X_test = scaler(X_train, X_test)
-
-    models = [linear_model.LinearRegression,
-              DecisionTreeClassifier,
-              RandomForestClassifier]
-    for model in models:
-        evaluate_model(X_train, X_test, y_train, y_test, model)
-"""
-
