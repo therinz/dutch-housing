@@ -8,25 +8,25 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import r2_score, median_absolute_error
 from sklearn import linear_model
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.ensemble import RandomForestClassifier
 from yellowbrick.regressor import ResidualsPlot, PredictionError
 
 importlib.import_module("helpers")
-from helpers import validate_input                  # noqa
+from helpers import validate_input                      # noqa
 importlib.import_module("json_dataframe")
-from json_dataframe import APARTMENTS               # noqa
+from json_dataframe import APARTMENTS, clean_dataset    # noqa
 
 
 class MachineLearnModel:
-    BASE = os.path.join(os.pardir, "data")
+    base = os.path.join(os.pardir, "data")
 
-    def __init__(self, filename, mode="apartments"):
+    def __init__(self, filename, mode=None):
         # Declare variables
         self.X_train = self.X_test = self.y_train = self.y_test = pd.DataFrame
+        self.q = pd.DataFrame
+        self.scaled_fit = None
 
         # Open file
-        self.df = pd.read_pickle(os.path.join(MachineLearnModel.BASE,
+        self.df = pd.read_pickle(os.path.join(MachineLearnModel.base,
                                               filename))
 
         # Check for null values
@@ -37,21 +37,19 @@ class MachineLearnModel:
         self.df = (self.df.rename(columns={"rf_plat dak": "rf_plat_dak"})
                    .drop(columns=["xf_attic"])
                    .reset_index(drop=True))
-        # Temp solution to drop where asking price is 0
-        self.df.drop(self.df[self.df["asking_price"] == 0].index,
-                     inplace=True)
 
         # Drop columns that appear highly correlated with other factors.
-        # distractors = ["vve_kvk", "vve_am", "vve_per_contr",
-        #               "vve_reserve_fund", "rt_pannen", "rf_plat_dak",
-        #               "vve_contribution"]
-        distractors = ["address", "price_m2"]
+        distractors = ["vve_kvk", "vve_am", "vve_per_contr",
+                       "vve_reserve_fund", "rt_pannen", "rf_plat_dak",
+                       "vve_contribution", "address", "price_m2"]
         self.df = self.df.drop(columns=distractors)
 
         # Select apartments or houses
-        if mode.lower() == "apartments":
+        if mode:
+            self.df = self.df[self.df[APARTMENTS].apply(any, axis=1)]
             self.apartments()
         else:
+            self.df = self.df[~self.df[APARTMENTS].apply(any, axis=1)]
             self.houses()
 
         # Split into X and y
@@ -113,8 +111,7 @@ class MachineLearnModel:
         # Drop columns that are not relevant for houses
         pt = [col
               for col in self.df.columns
-              if col in APARTMENTS
-              or (col.startswith("rt_") or col.startswith("rf_"))]
+              if col in APARTMENTS]
         self.df = self.df.drop(columns=pt + ["apartment_level"])
 
     def split_dataset(self, test_size=.4):
@@ -140,13 +137,27 @@ class MachineLearnModel:
                     and self.df[col].dtype in ["int64", "float64"]
                     and col != "asking_price"]
 
-        # Fit mdl
+        # In prediction mode: only fit and return
+        if self.scaled_fit:
+            self.q.reset_index(drop=True, inplace=True)
+            scaled = pd.DataFrame(self.scaled_fit
+                                  .transform(self.q[num_cols]),
+                                  columns=num_cols)
+            self.q = self.q.drop(columns=num_cols, axis=1)
+            self.q = self.q.merge(scaled,
+                                  left_index=True,
+                                  right_index=True,
+                                  how="outer")
+            return
+
+        # Fit scaler model
         std = StandardScaler()
-        scaled_fit = std.fit(self.X_train[num_cols])
+        self.scaled_fit = std.fit(self.X_train[num_cols])
 
         # Apply to dataframe, train set first
         self.X_train.reset_index(drop=True, inplace=True)
-        scaled = pd.DataFrame(scaled_fit.transform(self.X_train[num_cols]),
+        scaled = pd.DataFrame(self.scaled_fit
+                              .transform(self.X_train[num_cols]),
                               columns=num_cols)
         self.X_train = self.X_train.drop(columns=num_cols, axis=1)
         self.X_train = self.X_train.merge(scaled,
@@ -155,7 +166,8 @@ class MachineLearnModel:
                                           how="outer")
         # test set
         self.X_test.reset_index(drop=True, inplace=True)
-        scaled_test = pd.DataFrame(scaled_fit.transform(self.X_test[num_cols]),
+        scaled_test = pd.DataFrame(self.scaled_fit
+                                   .transform(self.X_test[num_cols]),
                                    columns=num_cols)
         self.X_test = self.X_test.drop(columns=num_cols, axis=1)
         self.X_test = self.X_test.merge(scaled_test,
@@ -174,16 +186,19 @@ class MachineLearnModel:
     def evaluate_model(self, model, viz=False):
         """Run ML mdl and return score"""
         models = {"LR": linear_model.LinearRegression,
-                  "DT": DecisionTreeClassifier,
-                  "RF": RandomForestClassifier,
                   "RI": linear_model.Ridge,
                   "LA": linear_model.Lasso,
                   "EN": linear_model.ElasticNet}
 
+        trans = {"LR": "Linear regression model",
+                 "RI": "Ridge regression model",
+                 "LA": "Lasso regression model",
+                 "EN": "ElasticNet regression model"}
+
         ml_model = models[model]()
         ml_model.fit(self.X_train, self.y_train)
 
-        print(f"\n-----{str(model)}-----\n\n")
+        print(f"\n-----{str(trans[model])}-----\n\n")
 
         if viz:
             # Create residuals plot
@@ -191,12 +206,38 @@ class MachineLearnModel:
                 self.visualize_model(plot, ml_model)
 
         predictions = ml_model.predict(self.X_test)
+        train_r2 = ml_model.score(self.X_train, self.y_train)
         acc = median_absolute_error(self.y_test, predictions)
-        r2 = r2_score(self.y_test, predictions)
-        print(ml_model.score(self.X_train, self.y_train))
+        test_r2 = r2_score(self.y_test, predictions)
 
-        print(f"Model achieved an mean absolute error of {acc:.3f}."
-              f"\nR2 score is {r2:.3f}")
+        # Print stats
+        size = self.X_train.shape[0] + self.X_test.shape[0]
+        print(f"Total rows used: {size}")
+
+        print(f"R2 for training set: {train_r2}."
+              f"\nMean absolute error of {acc:.3f}."
+              f"\nR2 score for test set: {test_r2:.3f}")
+
+    def predict(self, file):
+        """Predict price based on characteristics."""
+
+        # Open file and remove asking_price
+        self.q = (clean_dataset(file, mode="predict")
+                  .drop(columns=["asking_price"]))
+
+        # equalize columns with X_train
+
+        add = [col
+               for col in self.X_train.columns
+               if col not in self.q.columns]
+        remove = [col
+                  for col in self.q.columns
+                  if col not in self.X_train.columns]
+
+        # scale q
+        self.scaler()
+
+        pass
 
 
 if __name__ == '__main__':
@@ -205,9 +246,7 @@ if __name__ == '__main__':
     # prompt = "Name of file: "
     # validate_input(prompt, type_=str, min_=5)
     ML_mdl = MachineLearnModel("combination.pkl")
-    mdls = ["LR"
-        #, "DT", "RF"
-            ]
+    mdls = ["LR", "RI", "LA", "EN"]
     for mdl in mdls:
-        ML_mdl.evaluate_model(mdl, viz=False)
+        ML_mdl.evaluate_model(mdl, viz=True)
     print("\nfinished")

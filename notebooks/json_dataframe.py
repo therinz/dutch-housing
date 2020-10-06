@@ -20,7 +20,7 @@ APARTMENTS = ["pt_bovenwoning", "pt_benedenwoning", "pt_penthouse",
               "pt_corridorflat", "pt_portiekwoning"]
 
 
-def clean_dataset(filename):
+def clean_dataset(filename, mode=None):
     """Open, clean and save a Funda dataset."""
 
     # Open JSON file
@@ -53,6 +53,10 @@ def clean_dataset(filename):
     # Get coordinates and bin into neighborhoods
     print("Please provide Google Maps API key:")
     df = geolocation(df, getpass())
+
+    # If in prediction mode, don't export but return df
+    if mode:
+        return df
 
     # Export to pickle file
     path = os.path.join(BASE, filename.rsplit(".")[0] + ".pkl")
