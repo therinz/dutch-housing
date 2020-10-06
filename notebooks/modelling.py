@@ -14,12 +14,14 @@ from yellowbrick.regressor import ResidualsPlot, PredictionError
 
 importlib.import_module("helpers")
 from helpers import validate_input                  # noqa
+importlib.import_module("json_dataframe")
+from json_dataframe import APARTMENTS               # noqa
 
 
 class MachineLearnModel:
     BASE = os.path.join(os.pardir, "data")
 
-    def __init__(self, filename):
+    def __init__(self, filename, mode="apartments"):
         # Declare variables
         self.X_train = self.X_test = self.y_train = self.y_test = pd.DataFrame
 
@@ -27,18 +29,35 @@ class MachineLearnModel:
         self.df = pd.read_pickle(os.path.join(MachineLearnModel.BASE,
                                               filename))
 
+        # Check for null values
+        if any(self.df.isnull().any()):
+            raise ValueError("Null values present in DataFrame.")
+
         # Temp solution for incorrect column names
         self.df = (self.df.rename(columns={"rf_plat dak": "rf_plat_dak"})
                    .drop(columns=["xf_attic"])
                    .reset_index(drop=True))
-        # Temp solution
-        self.df.drop(self.df[self.df['asking_price'] == 0].index,
+        # Temp solution to drop where asking price is 0
+        self.df.drop(self.df[self.df["asking_price"] == 0].index,
                      inplace=True)
+
+        # Drop columns that appear highly correlated with other factors.
+        # distractors = ["vve_kvk", "vve_am", "vve_per_contr",
+        #               "vve_reserve_fund", "rt_pannen", "rf_plat_dak",
+        #               "address", "price_m2"]
+        distractors = ["address", "price_m2", "service_fees_pm"]
+        self.df.drop(columns=distractors, inplace=True)
 
         # Drop outliers for asking price
         self.df.drop(self.df[(self.df.asking_price > 10000000)
                              | (self.df.asking_price < 100000)]
                      .index, inplace=True)
+
+        # Select apartments or houses
+        if mode.lower() == "apartments":
+            self.apartments()
+        else:
+            self.houses()
 
         # Split into X and y
         self.split_dataset()
@@ -46,19 +65,49 @@ class MachineLearnModel:
         # Scale X
         self.scaler()
 
+    def apartments(self):
+        """Remove outliers and drop non-apartment columns."""
+
+        ap = list(self.df[(self.df["asking_price"] > 10000000)
+                          | (self.df["asking_price"] < 100000)].index)
+        yr = list(self.df[self.df["build_year"] < 1750].index)
+        sf = list(self.df[self.df["service_fees_pm"] > 500].index)
+        m3 = list(self.df[(self.df["property_m3"] < 10)
+                          | (self.df["property_m3"] > 800)].index)
+        br = list(self.df[self.df["num_bathrooms"] > 4].index)
+        tl = list(self.df[self.df["num_toilets"] > 3].index)
+        bed = list(self.df[self.df["bedrooms"] > 5].index)
+        do = list(self.df[self.df["days_online"] > 120].index)
+
+        # Drop rows that have outliers
+        self.df = self.df.drop(ap + yr + sf + m3 + br + tl + bed + do)
+
+        # Drop columns that are not relevant for apartments
+        pt = [col
+              for col in self.df.columns
+              if (col.startswith("pt") and col not in APARTMENTS)
+              or (col.startswith("rt_") or col.startswith("rf_"))]
+        self.df = self.df.drop(columns=pt + ["land_m2", "floors"])
+
+    """def houses(self):
+        Remove outliers and drop apartment columns.
+
+
+
+        # Drop columns that are not relevant for houses
+        pt = [col
+              for col in self.df.columns
+              if col in APARTMENTS
+              or (col.startswith("rt_") or col.startswith("rf_")))]
+        self.df = self.df.drop(columns=pt + []))"""
+
     def split_dataset(self, test_size=.4):
         """Return train & test set for X and y."""
-
-        # Drop columns that appear highly correlated with other factors.
-        # distractors = ["vve_kvk", "vve_am", "vve_per_contr",
-        #               "vve_reserve_fund", "rt_pannen", "rf_plat_dak",
-        #               "address", "price_m2"]
-        distractors = ["asking_price", "address"]
 
         # Set variables
         X = self.df[[col
                      for col in self.df.columns
-                     if col not in distractors]]
+                     if col != "asking_price"]]
         y = self.df["asking_price"]
 
         (self.X_train, self.X_test,
@@ -140,7 +189,8 @@ if __name__ == '__main__':
     # prompt = "Name of file: "
     # validate_input(prompt, type_=str, min_=5)
     ML_mdl = MachineLearnModel("combination.pkl")
-    mdls = ["LR", "DT", "RF"
+    mdls = ["LR"
+        #, "DT", "RF"
             ]
     for mdl in mdls:
         ML_mdl.evaluate_model(mdl, viz=False)

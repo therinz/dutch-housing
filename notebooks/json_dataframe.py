@@ -16,6 +16,8 @@ from helpers import garden, validate_input, contains_to_binary      # noqa
 
 # Globals
 BASE = os.path.join(os.pardir, "data")
+APARTMENTS = ["pt_bovenwoning", "pt_benedenwoning", "pt_penthouse",
+              "pt_corridorflat", "pt_portiekwoning"]
 
 
 def clean_dataset(filename):
@@ -168,6 +170,9 @@ def convert_num_cols(df):
                   property_m3=extract_num(df["property_m3"], "meter"))
           .drop(columns="bathrooms"))
 
+    # Correct bathrooms to minimum of one
+    df.loc[df["num_bathrooms"] == 0, "num_bathrooms"] = 1
+
     # Extract number of rooms and bedrooms
     df["rooms"] = extract_num(df["num_rooms"], "rooms")
     df["bedrooms"] = extract_num(df["num_rooms"], "bedrooms")
@@ -239,11 +244,9 @@ def dummy_columns(df):
 
     # Since we have split the listing type into categories,
     # we can split for either apartments or full houses
-    apartments = ["pt_bovenwoning", "pt_benedenwoning", "pt_penthouse",
-                  "pt_corridorflat", "pt_portiekwoning"]
     other_prop = [col
                   for col in df.columns
-                  if col.startswith("pt") and col not in apartments]
+                  if col.startswith("pt") and col not in APARTMENTS]
 
     # Number of floors in house
     df["floors"] = np.where(df[other_prop].apply(any, axis=1),
@@ -440,7 +443,8 @@ TRANSLATE_COLS = {'OVE-Vraagprijs': 'asking_price',
                   'OVE-Laatste vraagprijs': 'asking_price',
                   'OTH-Externe bergruimte': "external_storage",
                   'OTH-Overige inpandige ruimte': "other_space",
-                  'OTH-Lasten': "ownership_costs"}
+                  'OTH-Lasten': "ownership_costs",
+                  'VER-Aangeboden sinds': "days_online"}
 
 if __name__ == '__main__':
     prompt = "Please provide filename of .json in data folder: "

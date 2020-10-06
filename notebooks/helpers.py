@@ -83,7 +83,7 @@ def build_era(x):
 def listing_type(df):
     """Split tags in property and apartment columns to dummies."""
 
-    # Merge houses and apartments to one column
+    # Merge houses and APARTMENTS to one column
     df["property_type"] = np.where(df["property_type"].notna(),
                                    df["property_type"],
                                    df["apartment_type"])
