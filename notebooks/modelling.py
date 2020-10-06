@@ -11,19 +11,20 @@ from sklearn import linear_model
 from yellowbrick.regressor import ResidualsPlot, PredictionError
 
 importlib.import_module("helpers")
-from helpers import validate_input                      # noqa
+from helpers import validate_input  # noqa
+
 importlib.import_module("json_dataframe")
-from json_dataframe import APARTMENTS, clean_dataset    # noqa
+from json_dataframe import APARTMENTS, clean_dataset  # noqa
 
 
 class MachineLearnModel:
     base = os.path.join(os.pardir, "data")
 
-    def __init__(self, filename, mode=None):
+    def __init__(self, filename, apartment=False):
         # Declare variables
         self.X_train = self.X_test = self.y_train = self.y_test = pd.DataFrame
         self.q = pd.DataFrame
-        self.scaled_fit = None
+        self.scaled_fit = self.ml_model = None
 
         # Open file
         self.df = pd.read_pickle(os.path.join(MachineLearnModel.base,
@@ -39,13 +40,13 @@ class MachineLearnModel:
                    .reset_index(drop=True))
 
         # Drop columns that appear highly correlated with other factors.
-        distractors = ["vve_kvk", "vve_am", "vve_per_contr",
-                       "vve_reserve_fund", "rt_pannen", "rf_plat_dak",
-                       "vve_contribution", "address", "price_m2"]
-        self.df = self.df.drop(columns=distractors)
+        distractions = ["vve_kvk", "vve_am", "vve_per_contr",
+                        "vve_reserve_fund", "rt_pannen", "rf_plat_dak",
+                        "vve_contribution", "address", "price_m2"]
+        self.df = self.df.drop(columns=distractions)
 
         # Select apartments or houses
-        if mode:
+        if apartment:
             self.df = self.df[self.df[APARTMENTS].apply(any, axis=1)]
             self.apartments()
         else:
@@ -61,19 +62,18 @@ class MachineLearnModel:
     def apartments(self):
         """Remove outliers and drop non-apartment columns."""
 
-        outliers = [
-            list(self.df[(self.df["asking_price"] > 10000000)
-                         | (self.df["asking_price"] < 100000)].index),
-            list(self.df[self.df["build_year"] < 1600].index),
-            list(self.df[self.df["service_fees_pm"] > 500].index),
-            list(self.df[(self.df["property_m3"] < 10)
-                         | (self.df["property_m3"] > 800)].index),
-            list(self.df[self.df["num_bathrooms"] > 4].index),
-            list(self.df[self.df["num_toilets"] > 3].index),
-            list(self.df[self.df["bedrooms"] > 5].index),
-            list(self.df[self.df["days_online"] > 120].index)
-        ]
-        outliers = {index for col in outliers for index in col}
+        outliers = {
+            *self.df[(self.df["asking_price"] > 10000000)
+                      | (self.df["asking_price"] < 100000)].index,
+            *self.df[self.df["build_year"] < 1600].index,
+            *self.df[self.df["service_fees_pm"] > 500].index,
+            *self.df[(self.df["property_m3"] < 10)
+                     | (self.df["property_m3"] > 800)].index,
+            *self.df[self.df["num_bathrooms"] > 4].index,
+            *self.df[self.df["num_toilets"] > 3].index,
+            *self.df[self.df["bedrooms"] > 5].index,
+            *self.df[self.df["days_online"] > 120].index
+        }
 
         # Drop rows that have outliers
         self.df = self.df.drop(outliers)
@@ -88,22 +88,21 @@ class MachineLearnModel:
     def houses(self):
         """Remove outliers and drop apartment columns."""
 
-        outliers = [
-            list(self.df[(self.df["asking_price"] > 10000000)
-                         | (self.df["asking_price"] < 100000)].index),
-            list(self.df[self.df["build_year"] < 1600].index),
-            list(self.df[self.df["land_m2"] > 600].index),
-            list(self.df[(self.df["property_m3"] < 10)
-                         | (self.df["property_m3"] > 800)].index),
-            list(self.df[self.df["living_m2"] > 500].index),
-            list(self.df[self.df["num_bathrooms"] > 5].index),
-            list(self.df[self.df["num_toilets"] > 4].index),
-            list(self.df[self.df["floors"] > 7].index),
-            list(self.df[self.df["rooms"] > 15].index),
-            list(self.df[self.df["bedrooms"] > 8].index),
-            list(self.df[self.df["days_online"] > 120].index)
-        ]
-        outliers = {index for col in outliers for index in col}
+        outliers = {
+            *self.df[(self.df["asking_price"] > 10000000)
+                         | (self.df["asking_price"] < 100000)].index,
+            *self.df[self.df["build_year"] < 1600].index,
+            *self.df[self.df["land_m2"] > 600].index,
+            *self.df[(self.df["property_m3"] < 10)
+                         | (self.df["property_m3"] > 800)].index,
+            *self.df[self.df["living_m2"] > 500].index,
+            *self.df[self.df["num_bathrooms"] > 5].index,
+            *self.df[self.df["num_toilets"] > 4].index,
+            *self.df[self.df["floors"] > 7].index,
+            *self.df[self.df["rooms"] > 15].index,
+            *self.df[self.df["bedrooms"] > 8].index,
+            *self.df[self.df["days_online"] > 120].index
+        }
 
         # Drop rows that have outliers
         self.df = self.df.drop(outliers)
@@ -137,7 +136,7 @@ class MachineLearnModel:
                     and self.df[col].dtype in ["int64", "float64"]
                     and col != "asking_price"]
 
-        # In prediction mode: only fit and return
+        # In prediction apartment: only fit and return
         if self.scaled_fit:
             self.q.reset_index(drop=True, inplace=True)
             scaled = pd.DataFrame(self.scaled_fit
@@ -183,7 +182,7 @@ class MachineLearnModel:
         visualizer.score(self.X_test, self.y_test)
         visualizer.show()
 
-    def evaluate_model(self, model, viz=False):
+    def evaluate_model(self, model, viz=False, save=False, verbose=True):
         """Run ML mdl and return score"""
         models = {"LR": linear_model.LinearRegression,
                   "RI": linear_model.Ridge,
@@ -198,46 +197,69 @@ class MachineLearnModel:
         ml_model = models[model]()
         ml_model.fit(self.X_train, self.y_train)
 
-        print(f"\n-----{str(trans[model])}-----\n\n")
+        print(f"\n-----Working on: {str(trans[model])}...-----")
 
         if viz:
             # Create residuals plot
             for plot in [ResidualsPlot, PredictionError]:
                 self.visualize_model(plot, ml_model)
 
-        predictions = ml_model.predict(self.X_test)
-        train_r2 = ml_model.score(self.X_train, self.y_train)
-        acc = median_absolute_error(self.y_test, predictions)
-        test_r2 = r2_score(self.y_test, predictions)
-
         # Print stats
-        size = self.X_train.shape[0] + self.X_test.shape[0]
-        print(f"Total rows used: {size}")
+        if verbose:
+            # Get predictions and score it
+            predictions = ml_model.predict(self.X_test)
+            train_r2 = ml_model.score(self.X_train, self.y_train)
+            acc = median_absolute_error(self.y_test, predictions)
+            test_r2 = r2_score(self.y_test, predictions)
 
-        print(f"R2 for training set: {train_r2}."
-              f"\nMean absolute error of {acc:.3f}."
-              f"\nR2 score for test set: {test_r2:.3f}")
+            # Print to screen
+            size = self.X_train.shape[0] + self.X_test.shape[0]
+            print(f"Total rows used: {size}"
+                  f"\nR2 for training set: {train_r2:.3f}."
+                  f"\nMean absolute error of {int(acc)}."
+                  f"\nR2 score for test set: {test_r2:.3f}\n---")
+
+        # Save the model for prediction later
+        if save:
+            self.ml_model = ml_model
 
     def predict(self, file):
         """Predict price based on characteristics."""
 
+        print("\nFetching new data:")
+
         # Open file and remove asking_price
         self.q = (clean_dataset(file, mode="predict")
                   .drop(columns=["asking_price"]))
+        address = self.q.iloc[0]["address"]
 
-        # equalize columns with X_train
+        # Equalize columns with X_train
+        add = set(self.X_train.columns).difference(set(self.q.columns))
+        remove = set(self.q.columns).difference(set(self.X_train.columns))
+        add_cols = dict.fromkeys(add, 0)
+        self.q = self.q.drop(columns=remove).assign(**add_cols)
 
-        add = [col
-               for col in self.X_train.columns
-               if col not in self.q.columns]
-        remove = [col
-                  for col in self.q.columns
-                  if col not in self.X_train.columns]
-
-        # scale q
+        # Scale q
         self.scaler()
 
-        pass
+        # Predict
+        value = int(abs(self.ml_model.predict(self.q)))
+        print(f"\n-----\nExpected asking price for {address}: € {value},-.")
+
+
+def lookup_worth():
+    # Ask for type of lookup
+    prompt = "Type of listing: apartment or house? "
+    options = ["apartment", "a", "house", "h"]
+    question = validate_input(prompt, type_=str, options=options)
+
+    # Train model
+    mode = question in options[:2]
+    ML_mdl = MachineLearnModel("combination.pkl", apartment=mode)
+    ML_mdl.evaluate_model("EN", viz=False, save=True, verbose=False)
+
+    # Make prediction
+    ML_mdl.predict("predict.json")
 
 
 if __name__ == '__main__':
@@ -245,8 +267,13 @@ if __name__ == '__main__':
 
     # prompt = "Name of file: "
     # validate_input(prompt, type_=str, min_=5)
-    ML_mdl = MachineLearnModel("combination.pkl")
-    mdls = ["LR", "RI", "LA", "EN"]
+
+    # Initialize model
+    ML_mdl = MachineLearnModel("combination.pkl", apartment=True)
+    mdls = [#"LR", "RI", "LA",
+        "EN"
+            ]
     for mdl in mdls:
-        ML_mdl.evaluate_model(mdl, viz=True)
-    print("\nfinished")
+        ML_mdl.evaluate_model(mdl, viz=False, save=True)
+    print("Finished shaping model.")
+    ML_mdl.predict("predict.json")

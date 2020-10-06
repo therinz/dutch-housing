@@ -54,7 +54,7 @@ def clean_dataset(filename, mode=None):
     print("Please provide Google Maps API key:")
     df = geolocation(df, getpass())
 
-    # If in prediction mode, don't export but return df
+    # If in prediction apartment, don't export but return dataframe
     if mode:
         return df
 

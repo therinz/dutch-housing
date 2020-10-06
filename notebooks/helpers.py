@@ -58,8 +58,11 @@ def extract_num(col, mode):
                          .fillna(0))
 
 
-def contains_to_binary(col, pattern, regex=False):
+def contains_to_binary(col, pattern, regex=False, opp=False):
     """Return 1 if col contains pattern, else 0."""
+
+    # Set values for true and false conditions based on func argument
+    t, f = (0, 1) if opp else (1, 0)
 
     return np.where(col
                     .astype(str)
@@ -67,7 +70,7 @@ def contains_to_binary(col, pattern, regex=False):
                                   case=False,
                                   regex=regex,
                                   na=False),
-                    1, 0)
+                    t, f)
 
 
 def build_era(x):
