@@ -44,14 +44,9 @@ class MachineLearnModel:
         # Drop columns that appear highly correlated with other factors.
         # distractors = ["vve_kvk", "vve_am", "vve_per_contr",
         #               "vve_reserve_fund", "rt_pannen", "rf_plat_dak",
-        #               "address", "price_m2"]
-        distractors = ["address", "price_m2", "service_fees_pm"]
-        self.df.drop(columns=distractors, inplace=True)
-
-        # Drop outliers for asking price
-        self.df.drop(self.df[(self.df.asking_price > 10000000)
-                             | (self.df.asking_price < 100000)]
-                     .index, inplace=True)
+        #               "vve_contribution"]
+        distractors = ["address", "price_m2"]
+        self.df = self.df.drop(columns=distractors)
 
         # Select apartments or houses
         if mode.lower() == "apartments":
@@ -68,19 +63,22 @@ class MachineLearnModel:
     def apartments(self):
         """Remove outliers and drop non-apartment columns."""
 
-        ap = list(self.df[(self.df["asking_price"] > 10000000)
-                          | (self.df["asking_price"] < 100000)].index)
-        yr = list(self.df[self.df["build_year"] < 1750].index)
-        sf = list(self.df[self.df["service_fees_pm"] > 500].index)
-        m3 = list(self.df[(self.df["property_m3"] < 10)
-                          | (self.df["property_m3"] > 800)].index)
-        br = list(self.df[self.df["num_bathrooms"] > 4].index)
-        tl = list(self.df[self.df["num_toilets"] > 3].index)
-        bed = list(self.df[self.df["bedrooms"] > 5].index)
-        do = list(self.df[self.df["days_online"] > 120].index)
+        outliers = [
+            list(self.df[(self.df["asking_price"] > 10000000)
+                         | (self.df["asking_price"] < 100000)].index),
+            list(self.df[self.df["build_year"] < 1600].index),
+            list(self.df[self.df["service_fees_pm"] > 500].index),
+            list(self.df[(self.df["property_m3"] < 10)
+                         | (self.df["property_m3"] > 800)].index),
+            list(self.df[self.df["num_bathrooms"] > 4].index),
+            list(self.df[self.df["num_toilets"] > 3].index),
+            list(self.df[self.df["bedrooms"] > 5].index),
+            list(self.df[self.df["days_online"] > 120].index)
+        ]
+        outliers = {index for col in outliers for index in col}
 
         # Drop rows that have outliers
-        self.df = self.df.drop(ap + yr + sf + m3 + br + tl + bed + do)
+        self.df = self.df.drop(outliers)
 
         # Drop columns that are not relevant for apartments
         pt = [col
@@ -89,17 +87,35 @@ class MachineLearnModel:
               or (col.startswith("rt_") or col.startswith("rf_"))]
         self.df = self.df.drop(columns=pt + ["land_m2", "floors"])
 
-    """def houses(self):
-        Remove outliers and drop apartment columns.
+    def houses(self):
+        """Remove outliers and drop apartment columns."""
 
+        outliers = [
+            list(self.df[(self.df["asking_price"] > 10000000)
+                         | (self.df["asking_price"] < 100000)].index),
+            list(self.df[self.df["build_year"] < 1600].index),
+            list(self.df[self.df["land_m2"] > 600].index),
+            list(self.df[(self.df["property_m3"] < 10)
+                         | (self.df["property_m3"] > 800)].index),
+            list(self.df[self.df["living_m2"] > 500].index),
+            list(self.df[self.df["num_bathrooms"] > 5].index),
+            list(self.df[self.df["num_toilets"] > 4].index),
+            list(self.df[self.df["floors"] > 7].index),
+            list(self.df[self.df["rooms"] > 15].index),
+            list(self.df[self.df["bedrooms"] > 8].index),
+            list(self.df[self.df["days_online"] > 120].index)
+        ]
+        outliers = {index for col in outliers for index in col}
 
+        # Drop rows that have outliers
+        self.df = self.df.drop(outliers)
 
         # Drop columns that are not relevant for houses
         pt = [col
               for col in self.df.columns
               if col in APARTMENTS
-              or (col.startswith("rt_") or col.startswith("rf_")))]
-        self.df = self.df.drop(columns=pt + []))"""
+              or (col.startswith("rt_") or col.startswith("rf_"))]
+        self.df = self.df.drop(columns=pt + ["apartment_level"])
 
     def split_dataset(self, test_size=.4):
         """Return train & test set for X and y."""
