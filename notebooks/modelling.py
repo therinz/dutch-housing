@@ -1,6 +1,7 @@
 # (c) 2020 Rinze Douma
 
 import os
+import importlib
 
 import pandas as pd
 from sklearn.model_selection import train_test_split
@@ -11,6 +12,9 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
 from yellowbrick.regressor import ResidualsPlot, PredictionError
 
+importlib.import_module("helpers")
+from helpers import validate_input                  # noqa
+
 
 class MachineLearnModel:
     BASE = os.path.join(os.pardir, "data")
@@ -20,12 +24,21 @@ class MachineLearnModel:
         self.X_train = self.X_test = self.y_train = self.y_test = pd.DataFrame
 
         # Open file
-        self.df = pd.read_pickle(os.path.join(BASE, filename))
+        self.df = pd.read_pickle(os.path.join(MachineLearnModel.BASE,
+                                              filename))
 
         # Temp solution for incorrect column names
-        self.df = (self.df.rename(columns={"rf_plat dak": "rf_plat_dak",
-                                           "address_x": "address"})
+        self.df = (self.df.rename(columns={"rf_plat dak": "rf_plat_dak"})
+                   .drop(columns=["xf_attic"])
                    .reset_index(drop=True))
+        # Temp solution
+        self.df.drop(self.df[self.df['asking_price'] == 0].index,
+                     inplace=True)
+
+        # Drop outliers for asking price
+        self.df.drop(self.df[(self.df.asking_price > 10000000)
+                             | (self.df.asking_price < 100000)]
+                     .index, inplace=True)
 
         # Split into X and y
         self.split_dataset()
@@ -40,7 +53,7 @@ class MachineLearnModel:
         # distractors = ["vve_kvk", "vve_am", "vve_per_contr",
         #               "vve_reserve_fund", "rt_pannen", "rf_plat_dak",
         #               "address", "price_m2"]
-        distractors = ["asking_price", "address", "price_m2", "geometry"]
+        distractors = ["asking_price", "address"]
 
         # Set variables
         X = self.df[[col
@@ -57,25 +70,36 @@ class MachineLearnModel:
         """Convert numeric columns into scaled values."""
 
         # Select column names of factors with more than 2 values
-        num_cols = [col for col in self.X_train.columns
-                    if self.X_train[col].nunique() > 2
-                    and self.X_train[col].dtype in ["int64", "float64"]]
+        num_cols = [col for col in self.df.columns
+                    if self.df[col].nunique() > 2
+                    and self.df[col].dtype in ["int64", "float64"]
+                    and col != "asking_price"]
 
-        # Reset index for Null value issue
-        for xf in [self.X_train, self.X_test]:
-            xf.reset_index(drop=True, inplace=True)
-
-        # Fit model
+        # Fit mdl
         std = StandardScaler()
         scaled_fit = std.fit(self.X_train[num_cols])
 
-        # Apply
-        for xf in [self.X_train, self.X_test]:
-            scaled_X = scaled_fit.transform(xf[num_cols])
-            xf[num_cols] = pd.DataFrame(scaled_X, columns=num_cols)
+        # Apply to dataframe, train set first
+        self.X_train.reset_index(drop=True, inplace=True)
+        scaled = pd.DataFrame(scaled_fit.transform(self.X_train[num_cols]),
+                              columns=num_cols)
+        self.X_train = self.X_train.drop(columns=num_cols, axis=1)
+        self.X_train = self.X_train.merge(scaled,
+                                          left_index=True,
+                                          right_index=True,
+                                          how="outer")
+        # test set
+        self.X_test.reset_index(drop=True, inplace=True)
+        scaled_test = pd.DataFrame(scaled_fit.transform(self.X_test[num_cols]),
+                                   columns=num_cols)
+        self.X_test = self.X_test.drop(columns=num_cols, axis=1)
+        self.X_test = self.X_test.merge(scaled_test,
+                                        left_index=True,
+                                        right_index=True,
+                                        how="outer")
 
     def visualize_model(self, plot, model):
-        """Visualize the data for a model in a certain plot."""
+        """Visualize the data for a mdl in a certain plot."""
 
         visualizer = plot(model)
         visualizer.fit(self.X_train, self.y_train)
@@ -83,10 +107,13 @@ class MachineLearnModel:
         visualizer.show()
 
     def evaluate_model(self, model, viz=False):
-        """Run ML model and return score"""
+        """Run ML mdl and return score"""
         models = {"LR": linear_model.LinearRegression,
                   "DT": DecisionTreeClassifier,
-                  "RF": RandomForestClassifier}
+                  "RF": RandomForestClassifier,
+                  "RI": linear_model.Ridge,
+                  "LA": linear_model.Lasso,
+                  "EN": linear_model.ElasticNet}
 
         ml_model = models[model]()
         ml_model.fit(self.X_train, self.y_train)
@@ -95,11 +122,26 @@ class MachineLearnModel:
 
         if viz:
             # Create residuals plot
-            self.visualize_model(ResidualsPlot, ml_model)
+            for plot in [ResidualsPlot, PredictionError]:
+                self.visualize_model(plot, ml_model)
 
         predictions = ml_model.predict(self.X_test)
         acc = median_absolute_error(self.y_test, predictions)
         r2 = r2_score(self.y_test, predictions)
+        print(ml_model.score(self.X_train, self.y_train))
 
         print(f"Model achieved an mean absolute error of {acc:.3f}."
               f"\nR2 score is {r2:.3f}")
+
+
+if __name__ == '__main__':
+    """Run script if directly loaded."""
+
+    # prompt = "Name of file: "
+    # validate_input(prompt, type_=str, min_=5)
+    ML_mdl = MachineLearnModel("combination.pkl")
+    mdls = ["LR", "DT", "RF"
+            ]
+    for mdl in mdls:
+        ML_mdl.evaluate_model(mdl, viz=False)
+    print("\nfinished")

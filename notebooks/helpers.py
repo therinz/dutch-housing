@@ -169,9 +169,9 @@ def roof_description(col):
     # Create dummy column for each value
     for pat in roof_form:
         dummies[f"rf_{pat}"] = contains_to_binary(col, pat)
+        dummies.rename(columns={"rf_plat dak": "rf_plat_dak"})
     for pat in roof_type:
         dummies[f"rt_{pat}"] = contains_to_binary(col, pat)
-        dummies.rename(columns={"rf_plat dak": "rf_plat_dak"})
 
     return dummies
 

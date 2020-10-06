@@ -140,6 +140,8 @@ def convert_num_cols(df):
             "service_fees_pm", "price_m2"]
     for e in euro:
         df[e] = extract_num(df[e], "price")
+    # Drop where resultant asking price is 0
+    df.drop(df[df["asking_price"] == 0].index, inplace=True)
 
     # Calculate days since posting
     df["days_online"] = (df["days_online"]
@@ -233,7 +235,7 @@ def dummy_columns(df):
     # Attic and cellar
     pats = {"attic": "zolder|vliering", "cellar": "kelder"}
     for key, pat in pats.items():
-        df["xf_" + key] = contains_to_binary(df["floors"], pat)
+        df["xf_" + key] = contains_to_binary(df["floors"], pat, regex=True)
 
     # Since we have split the listing type into categories,
     # we can split for either apartments or full houses
