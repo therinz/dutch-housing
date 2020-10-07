@@ -9,8 +9,8 @@ from sklearn.metrics import r2_score, median_absolute_error
 from sklearn import linear_model
 from yellowbrick.regressor import ResidualsPlot, PredictionError
 
-from notebooks.helpers import validate_input
-from notebooks.json_dataframe import APARTMENTS, clean_dataset
+from helpers import validate_input
+from json_dataframe import APARTMENTS, clean_dataset
 
 
 class MachineLearnModel:
@@ -32,13 +32,13 @@ class MachineLearnModel:
 
         # Temp solution for incorrect column names
         self.df = (self.df.rename(columns={"rf_plat dak": "rf_plat_dak"})
-                   .drop(columns=["xf_attic"])
                    .reset_index(drop=True))
 
         # Drop columns that appear highly correlated with other factors.
         distractions = ["vve_kvk", "vve_am", "vve_per_contr",
                         "vve_reserve_fund", "rt_pannen", "rf_plat_dak",
-                        "vve_contribution", "address", "price_m2"]
+                        "vve_contribution", "address", "price_m2",
+                        "geometry"]
         self.df = self.df.drop(columns=distractions)
 
         # Select apartments or houses
