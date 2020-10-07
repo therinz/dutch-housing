@@ -30,6 +30,8 @@ def clean_dataset(filename, mode=None):
         print("File not found.")
         return
 
+    print(f"Created DataFrame with {df.shape[0]} rows.")
+
     # Rename columns
     df = rename_cols(df)
     # Drop irrelevant cols & rows
@@ -49,6 +51,14 @@ def clean_dataset(filename, mode=None):
         'garden_patio', 'garage_type', 'storage_features', 'storage_isolation',
         'outdoor_m2', 'surface_m2', 'ownership'
     ], inplace=True)
+
+    # Check for common errors
+    if df.columns.has_duplicates:
+        return print("Error: Duplicate column names.")
+    if df.isna().values.any():
+        return print("Error: Dataframe contains null values.")
+
+    df.to_pickle(os.path.join(BASE, "temp.pkl"))
 
     # Get coordinates and bin into neighborhoods
     print("Please provide Google Maps API key:")
@@ -70,7 +80,7 @@ def rename_cols(df):
     print("Rename columns...")
 
     # Set categories order
-    col_trans = ["OVE", "BOU", "OPP", "OTH", "IND", "ENE", "BUI", "GAR",
+    col_trans = ["OVE", "VER", "BOU", "OPP", "OTH", "IND", "ENE", "BUI", "GAR",
                  "BER", "PAR", "VVE", "KAD", "BED", "VEI"]
 
     # Build list of column names incl category label
@@ -81,6 +91,11 @@ def rename_cols(df):
 
     # Execute order
     df = df[["address", "postcode", "city"] + order].copy()
+
+    # Fix duplicate error for sold properties
+    if ("VER-Aangeboden sinds" in df.columns
+            and "OVE-Aangeboden sinds" in df.columns):
+        df.drop(columns=["OVE-Aangeboden sinds"], inplace=True)
 
     # Translate column names
     df.rename(columns=TRANSLATE_COLS, inplace=True)
@@ -146,6 +161,7 @@ def convert_num_cols(df):
             "service_fees_pm", "price_m2"]
     for e in euro:
         df[e] = extract_num(df[e], "price")
+
     # Drop where resultant asking price is 0
     df.drop(df[df["asking_price"] == 0].index, inplace=True)
 
@@ -451,6 +467,7 @@ TRANSLATE_COLS = {'OVE-Vraagprijs': 'asking_price',
                   'VER-Aangeboden sinds': "days_online"}
 
 if __name__ == '__main__':
-    prompt = "Please provide filename of .json in data folder: "
+    prompt = "Please provide filename of .json in 'data' folder: "
     f_name = validate_input(prompt, type_=str, min_=5)
     clean_dataset(f_name)
+    #combine_df("sale.pkl", "sold.pkl")
