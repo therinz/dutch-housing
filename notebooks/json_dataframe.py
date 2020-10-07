@@ -10,36 +10,42 @@ import numpy as np
 import pandas as pd
 
 from notebooks.helpers import convert_elapsed_time, extract_num, build_era
-from notebooks.helpers import listing_type, roof_description
+from notebooks.helpers import listing_type, roof_description, log_print
 from notebooks.helpers import garden, validate_input, contains_to_binary
 
 # Globals
-BASE = os.path.join(os.pardir, "data")
+BASE = os.path.join(os.getcwd(), "data")
 APARTMENTS = ["pt_bovenwoning", "pt_benedenwoning", "pt_penthouse",
               "pt_corridorflat", "pt_portiekwoning"]
 
 
-def clean_dataset(filename, mode=None):
+def clean_dataset(filename, predict=None, verbose=False):
     """Open, clean and save a Funda dataset."""
 
     # Open JSON file
+    path = filename if predict else os.path.join(BASE, filename)
     try:
-        df = pd.read_json(os.path.join(BASE, filename))
-    except FileNotFoundError:
+        df = pd.read_json(path)
+    except (FileNotFoundError, ValueError):
         print("File not found.")
         return
 
     print(f"Created DataFrame with {df.shape[0]} rows.")
 
     # Rename columns
+    log_print("Rename columns...", verbose)
     df = rename_cols(df)
     # Drop irrelevant cols & rows
+    log_print("Drop irrelevant cols & rows...", verbose)
     df = initial_drop(df)
     # Extract numeric data
+    log_print("Extract numeric information...", verbose)
     df = convert_num_cols(df)
     # Process binary information
+    log_print("Set binary columns...", verbose)
     df = binary_columns(df)
     # Convert categorical data to dummy columns
+    log_print("Create dummy columns for categorical columns...", verbose)
     df = dummy_columns(df)
 
     # Drop columns that are not significant
@@ -57,26 +63,23 @@ def clean_dataset(filename, mode=None):
     if df.isna().values.any():
         return print("Error: Dataframe contains null values.")
 
-    df.to_pickle(os.path.join(BASE, "temp.pkl"))
-
     # Get coordinates and bin into neighborhoods
     print("Please provide Google Maps API key:")
+    log_print("Fetch coordinates and bin into neighborhoods...", verbose)
     df = geolocation(df, getpass())
 
     # If in prediction apartment, don't export but return dataframe
-    if mode:
+    if predict:
         return df
 
     # Export to pickle file
     path = os.path.join(BASE, filename.rsplit(".")[0] + ".pkl")
     df.to_pickle(path)
-    print(f"Successfully exported to '{path}'.")
+    log_print(f"Successfully exported to '{path}'.", verbose)
 
 
 def rename_cols(df):
     """Translate and reorder columns."""
-
-    print("Rename columns...")
 
     # Set categories order
     col_trans = ["OVE", "VER", "BOU", "OPP", "OTH", "IND", "ENE", "BUI", "GAR",
@@ -104,8 +107,6 @@ def rename_cols(df):
 
 def initial_drop(df):
     """Drop data which is not relevant."""
-
-    print("Drop irrelevant cols & rows...")
 
     # Make sure the columns we use are also in this dataset
     add = [col for col in TRANSLATE_COLS.values() if col not in df.columns]
@@ -152,8 +153,6 @@ def initial_drop(df):
 
 def convert_num_cols(df):
     """Extract numeric values from columns."""
-
-    print("Extract numeric information...")
 
     # Columns in euro
     euro = ["asking_price", "vve_contribution",
@@ -216,8 +215,6 @@ def convert_num_cols(df):
 def binary_columns(df):
     """When columns have essentially 2 values, set as either 1 or 0."""
 
-    print("Set binary columns...")
-
     # VVE columns
     vve = ["vve_per_contr", "vve_kvk", "vve_am", "vve_reserve_fund",
            "vve_maintenance", "vve_insurance"]
@@ -245,8 +242,6 @@ def binary_columns(df):
 
 def dummy_columns(df):
     """Create dummy columns for categorical columns."""
-
-    print("Create dummy columns for categorical columns...")
 
     # Property and apartment types (prefix pt)
     listing_type(df)
@@ -305,8 +300,6 @@ def dummy_columns(df):
 
 def geolocation(df, key):
     """Bin listings into neighborhoods."""
-
-    print("Fetch coordinates and bin into neighborhoods...")
 
     # Delete additions to house number and drop rows without house number
     df["address"] = df["address"].str.extract(r"(.+ \d+)", expand=False)
@@ -465,8 +458,8 @@ TRANSLATE_COLS = {'OVE-Vraagprijs': 'asking_price',
                   'OTH-Lasten': "ownership_costs",
                   'VER-Aangeboden sinds': "days_online"}
 
+
 if __name__ == '__main__':
     prompt = "Please provide filename of .json in 'data' folder: "
     f_name = validate_input(prompt, type_=str, min_=5)
     clean_dataset(f_name)
-    #combine_df("sale.pkl", "sold.pkl")

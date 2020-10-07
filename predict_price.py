@@ -24,7 +24,6 @@ class PredictSpider(scrapy.Spider):
         self.start_urls = [link]
 
     def parse(self, response):
-        print("part 2")
         """Parse information found on house description page."""
 
         # Retrieve basic info about listing
@@ -42,34 +41,50 @@ class PredictSpider(scrapy.Spider):
         yield info
 
 
-url = "https://www.funda.nl/koop/amsterdam/huis-87491130-zuideinde-355-a/"
+JSON = os.path.join("data", "predict.json")
 
 
+def lookup_worth(verbose=False):
+    """Return predicted value of given listing."""
 
+    # Cleanup before we start
+    if os.path.exists(JSON):
+        os.remove(JSON)
 
-def lookup_worth():
     # Ask for type of lookup
     prompt = "Whats the URL of the house? "
-    url = validate_input(prompt, type_=str, min_=10)
+    url = validate_input(prompt, type_=str, min_=10).strip(" \"\'")
 
     # Get data from funda
-    process = CrawlerProcess(settings={
-        "FEEDS": {
-            os.path.join("data", "predict.json"): {"format": "json"}
-        }
-    })
+    settings = {"FEEDS": {JSON: {"format": "json"}},
+                "LOG_ENABLED": True}
+    if verbose:
+        print("Retrieving data from funda.nl...")
+    else:
+        settings.update({"LOG_LEVEL": "WARNING"})
+
+    process = CrawlerProcess(settings)
     process.crawl(PredictSpider, link=url)
     process.start()
 
     # Clean the data
-    df = (clean_dataset(os.path.join(), mode="predict")
+    df = (clean_dataset(JSON, predict=True, verbose=verbose)
           .drop(columns=["asking_price"]))
-    apartment = df[APARTMENTS].apply(any, axis=1)
-
+    try:
+        mode = df[APARTMENTS].apply(any, axis=1)
+    except KeyError:
+        mode = False
 
     # Train model
-    ML_mdl = MachineLearnModel("combination.pkl", apartment=mode)
-    ML_mdl.evaluate_model("EN", viz=False, save=True, verbose=False)
+    ML_mdl = MachineLearnModel(apartment=mode, verbose=verbose)
+    ML_mdl.evaluate_model("EN", viz=False, save=True)
 
     # Make prediction
-    ML_mdl.predict("predict.json")
+    ML_mdl.predict(df)
+
+    # Cleanup
+    os.remove(JSON)
+
+
+if __name__ == '__main__':
+    lookup_worth()

@@ -230,3 +230,9 @@ def validate_input(prompt, type_=None, min_=None, max_=None, options=None):
             print("Input must be one of the following: " + ", ".join(options))
         else:
             return ui
+
+
+def log_print(msg, verbose):
+    """Helper function to print log messages."""
+    if verbose:
+        print(msg)

@@ -1,22 +1,27 @@
 # (c) 2020 Rinze Douma
 
 import os
+import warnings
 
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import r2_score, median_absolute_error
 from sklearn import linear_model
-from yellowbrick.regressor import ResidualsPlot, PredictionError
+# from yellowbrick.regressor import ResidualsPlot, PredictionError
 
 from notebooks.json_dataframe import APARTMENTS, clean_dataset
 
+# Suppress yellowbrick warning
+warnings.simplefilter("ignore")
+
 
 class MachineLearnModel:
-    base = os.path.join(os.pardir, "data")
+    base = os.path.join(os.getcwd(), "data")
 
-    def __init__(self, filename, apartment=False):
+    def __init__(self, filename="combination.pkl", apartment=False, verbose=False):
         # Declare variables
+        self.verbose = verbose
         self.X_train = self.X_test = self.y_train = self.y_test = pd.DataFrame
         self.q = pd.DataFrame
         self.scaled_fit = self.ml_model = None
@@ -59,7 +64,7 @@ class MachineLearnModel:
 
         outliers = {
             *self.df[(self.df["asking_price"] > 10000000)
-                      | (self.df["asking_price"] < 100000)].index,
+                     | (self.df["asking_price"] < 100000)].index,
             *self.df[self.df["build_year"] < 1600].index,
             *self.df[self.df["service_fees_pm"] > 500].index,
             *self.df[(self.df["property_m3"] < 10)
@@ -85,11 +90,11 @@ class MachineLearnModel:
 
         outliers = {
             *self.df[(self.df["asking_price"] > 10000000)
-                         | (self.df["asking_price"] < 100000)].index,
+                     | (self.df["asking_price"] < 100000)].index,
             *self.df[self.df["build_year"] < 1600].index,
             *self.df[self.df["land_m2"] > 600].index,
             *self.df[(self.df["property_m3"] < 10)
-                         | (self.df["property_m3"] > 800)].index,
+                     | (self.df["property_m3"] > 800)].index,
             *self.df[self.df["living_m2"] > 500].index,
             *self.df[self.df["num_bathrooms"] > 5].index,
             *self.df[self.df["num_toilets"] > 4].index,
@@ -177,7 +182,7 @@ class MachineLearnModel:
         visualizer.score(self.X_test, self.y_test)
         visualizer.show()
 
-    def evaluate_model(self, model, viz=False, save=False, verbose=True):
+    def evaluate_model(self, model, viz=False, save=False):
         """Run ML mdl and return score"""
         models = {"LR": linear_model.LinearRegression,
                   "RI": linear_model.Ridge,
@@ -192,15 +197,16 @@ class MachineLearnModel:
         ml_model = models[model]()
         ml_model.fit(self.X_train, self.y_train)
 
-        print(f"\n-----Working on: {str(trans[model])}...-----")
+        if self.verbose:
+            print(f"\n-----Working on: {str(trans[model])}...-----")
 
-        if viz:
+        """if viz:
             # Create residuals plot
             for plot in [ResidualsPlot, PredictionError]:
-                self.visualize_model(plot, ml_model)
+                self.visualize_model(plot, ml_model)"""
 
         # Print stats
-        if verbose:
+        if self.verbose:
             # Get predictions and score it
             predictions = ml_model.predict(self.X_test)
             train_r2 = ml_model.score(self.X_train, self.y_train)
@@ -221,11 +227,11 @@ class MachineLearnModel:
     def predict(self, df):
         """Predict price based on characteristics."""
 
-        print("\nFetching new data:")
+        if self.verbose:
+            print("\nPredicting new data...")
 
         # Open file and remove asking_price
-        self.q = (clean_dataset(file, mode="predict")
-                  .drop(columns=["asking_price"]))
+        self.q = df
         address = self.q.iloc[0]["address"]
 
         # Equalize columns with X_train
@@ -240,20 +246,3 @@ class MachineLearnModel:
         # Predict
         value = int(abs(self.ml_model.predict(self.q)))
         print(f"\n-----\nExpected asking price for {address}: € {value},-.")
-
-
-if __name__ == '__main__':
-    """Run script if directly loaded."""
-
-    # prompt = "Name of file: "
-    # validate_input(prompt, type_=str, min_=5)
-
-    # Initialize model
-    ML_mdl = MachineLearnModel("combination.pkl", apartment=True)
-    mdls = [#"LR", "RI", "LA",
-        "EN"
-            ]
-    for mdl in mdls:
-        ML_mdl.evaluate_model(mdl, viz=False, save=True)
-    print("Finished shaping model.")
-    ML_mdl.predict("predict.json")
