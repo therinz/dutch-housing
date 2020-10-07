@@ -9,8 +9,7 @@ from sklearn.metrics import r2_score, median_absolute_error
 from sklearn import linear_model
 from yellowbrick.regressor import ResidualsPlot, PredictionError
 
-from helpers import validate_input
-from json_dataframe import APARTMENTS, clean_dataset
+from notebooks.json_dataframe import APARTMENTS, clean_dataset
 
 
 class MachineLearnModel:
@@ -219,7 +218,7 @@ class MachineLearnModel:
         if save:
             self.ml_model = ml_model
 
-    def predict(self, file):
+    def predict(self, df):
         """Predict price based on characteristics."""
 
         print("\nFetching new data:")

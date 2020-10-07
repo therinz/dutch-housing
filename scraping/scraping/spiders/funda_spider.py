@@ -8,11 +8,16 @@ class FundaSpider(scrapy.Spider):
     allowed_domains = ["funda.nl"]
     custom_settings = {'DEPTH_LIMIT': 300}
 
-    def __init__(self, state="", city="Amsterdam", *args, **kwargs):
+    def __init__(self, state="", city="Amsterdam", link=None, *args, **kwargs):
         super(FundaSpider, self).__init__(*args, **kwargs)
+
         if state and state != "verkocht":
-            raise CloseSpider("Entered state not valid")
-        self.start_urls = [f"http://www.funda.nl/koop/{city}/{state}" ]
+            raise scrapy.CloseSpider("Entered state not valid")
+
+        if link:
+            yield scrapy.Request(url=link, callback=self.parse_house)
+        else:
+            self.start_urls = [f"http://www.funda.nl/koop/{city}/{state}"]
 
     def parse(self, response):
 
