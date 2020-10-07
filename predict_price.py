@@ -44,36 +44,44 @@ class PredictSpider(scrapy.Spider):
 JSON = os.path.join("data", "predict.json")
 
 
-def lookup_worth(verbose=False):
+def lookup_worth(verbose=False, debug=False):
     """Return predicted value of given listing."""
 
-    # Cleanup before we start
-    if os.path.exists(JSON):
-        os.remove(JSON)
-
-    # Ask for type of lookup
-    prompt = "Whats the URL of the house? "
-    url = validate_input(prompt, type_=str, min_=10).strip(" \"\'")
-
-    # Get data from funda
-    settings = {"FEEDS": {JSON: {"format": "json"}},
-                "LOG_ENABLED": True}
-    if verbose:
-        print("Retrieving data from funda.nl...")
+    if debug:
+        df = pd.read_pickle(os.path.join("data", "predict.pkl"))
     else:
-        settings.update({"LOG_LEVEL": "WARNING"})
+        # Cleanup before we start
+        if os.path.exists(JSON):
+            os.remove(JSON)
 
-    process = CrawlerProcess(settings)
-    process.crawl(PredictSpider, link=url)
-    process.start()
+        # Ask for type of lookup
+        prompt = "Whats the URL of the house? "
+        url = validate_input(prompt, type_=str, min_=10).strip(" \"\'")
 
-    # Clean the data
-    df = (clean_dataset(JSON, predict=True, verbose=verbose)
-          .drop(columns=["asking_price"]))
+        # Get data from funda
+        settings = {"FEEDS": {JSON: {"format": "json"}},
+                    "LOG_ENABLED": True}
+        if verbose:
+            print("Retrieving data from funda.nl...")
+        else:
+            settings.update({"LOG_LEVEL": "WARNING"})
+
+        process = CrawlerProcess(settings)
+        process.crawl(PredictSpider, link=url)
+        process.start()
+
+        # Clean the data
+        df = (clean_dataset(JSON, predict=True, verbose=verbose)
+              .drop(columns=["asking_price"]))
+        df.to_pickle(os.path.join("data", "predict.pkl"))
+
+    apartments = [col for col in df.columns
+                  if col.startswith("pt") and col in APARTMENTS]
     try:
-        mode = df[APARTMENTS].apply(any, axis=1)
+        mode = df[apartments].apply(any, axis=1)[0]
     except KeyError:
         mode = False
+    print(mode)
 
     # Train model
     ML_mdl = MachineLearnModel(apartment=mode, verbose=verbose)
@@ -87,4 +95,4 @@ def lookup_worth(verbose=False):
 
 
 if __name__ == '__main__':
-    lookup_worth()
+    lookup_worth(verbose=True, debug=True)

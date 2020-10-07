@@ -86,7 +86,7 @@ def build_era(x):
 def listing_type(df):
     """Split tags in property and apartment columns to dummies."""
 
-    # Merge houses and APARTMENTS to one column
+    # Merge houses and apartments to one column
     df["property_type"] = np.where(df["property_type"].notna(),
                                    df["property_type"],
                                    df["apartment_type"])
@@ -105,33 +105,34 @@ def listing_type(df):
                 if tag and tag == tag}
 
     # Concatenate with original DF
-    pd.concat([df, pd.DataFrame(columns=[tag for tag in all_tags])], axis=1)
+    df = pd.concat([df, pd.DataFrame(columns=[tag for tag in all_tags])],
+                   axis=1)
 
     # Evaluate whether tag applicable
     for tag in all_tags:
         df[tag] = contains_to_binary(df["property_type"], tag)
 
     # Many tags mean the same, so we combine them under a single header
-    combine = {'2-onder-1-kapwoning': ['geschakelde_2-onder-1-kapwoning',
-                                       'halfvrijstaande_woning'],
-               'bovenwoning': ['dubbel_bovenhuis',
-                               'dubbel_bovenhuis_met_open_portiek',
+    combine = {'2-onder-1-kapwoning': ['geschakelde 2-onder-1-kapwoning',
+                                       'halfvrijstaande woning'],
+               'bovenwoning': ['dubbel bovenhuis',
+                               'dubbel bovenhuis met open portiek',
                                'maisonnette', 'tussenverdieping',
-                               'beneden_+_bovenwoning'],
-               'benedenwoning': ['dubbel_benedenhuis', 'bel-etage',
+                               'beneden_+_bovenwoning', 'dubbel_bovenhuis'],
+               'benedenwoning': ['dubbel benedenhuis', 'bel-etage',
                                  'souterrain'],
                'hoekwoning': ['eindwoning'],
                'waterwoning': ['woonboot'],
-               'portiekwoning': ['open_portiek', 'portiekflat'],
+               'portiekwoning': ['open portiek', 'portiekflat'],
                'landhuis': ['landgoed', 'woonboerderij'],
                'bungalow': ['semi-bungalow'],
                'eengezinswoning': ['patiowoning', 'dijkwoning',
-                                   'split-level_woning', 'kwadrant_woning',
+                                   'split-level woning', 'kwadrant woning',
                                    'hofjeswoning'],
                'herenhuis': ['grachtenpand'],
                'corridorflat': ['galerijflat'],
-               'villa': ['vrijstaande_woning'],
-               'tussenwoning': ['geschakelde_woning']}
+               'villa': ['vrijstaande woning'],
+               'tussenwoning': ['geschakelde woning']}
 
     for key, elem in combine.items():
         elem = [e for e in [key]+elem if e in all_tags]
@@ -153,9 +154,10 @@ def listing_type(df):
 
     # Add a prefix and replace spaces
     df.columns = [f"pt_{col}".replace(" ", "_")
-                  if col in all_tags
-                  else col
+                  if col in combine.keys() else col
                   for col in df.columns]
+
+    return df
 
 
 def roof_description(col):

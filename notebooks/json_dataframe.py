@@ -30,7 +30,7 @@ def clean_dataset(filename, predict=None, verbose=False):
         print("File not found.")
         return
 
-    print(f"Created DataFrame with {df.shape[0]} rows.")
+    log_print(f"Created DataFrame with {df.shape[0]} rows.", verbose)
 
     # Rename columns
     log_print("Rename columns...", verbose)
@@ -244,7 +244,7 @@ def dummy_columns(df):
     """Create dummy columns for categorical columns."""
 
     # Property and apartment types (prefix pt)
-    listing_type(df)
+    df = listing_type(df)
 
     # Dummies for roof 'type' and 'form' (prefix rt and rf)
     df = (pd.concat([df, roof_description(df["roof_type"].copy())],
