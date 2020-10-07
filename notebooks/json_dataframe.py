@@ -9,10 +9,9 @@ import geopandas as gpd
 import numpy as np
 import pandas as pd
 
-importlib.import_module("helpers")
-from helpers import convert_elapsed_time, extract_num, build_era    # noqa
-from helpers import listing_type, roof_description                  # noqa
-from helpers import garden, validate_input, contains_to_binary      # noqa
+from notebooks.helpers import convert_elapsed_time, extract_num, build_era
+from notebooks.helpers import listing_type, roof_description
+from notebooks.helpers import garden, validate_input, contains_to_binary
 
 # Globals
 BASE = os.path.join(os.pardir, "data")

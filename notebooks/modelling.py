@@ -1,7 +1,6 @@
 # (c) 2020 Rinze Douma
 
 import os
-import importlib
 
 import pandas as pd
 from sklearn.model_selection import train_test_split
@@ -10,11 +9,8 @@ from sklearn.metrics import r2_score, median_absolute_error
 from sklearn import linear_model
 from yellowbrick.regressor import ResidualsPlot, PredictionError
 
-importlib.import_module("helpers")
-from helpers import validate_input  # noqa
-
-importlib.import_module("json_dataframe")
-from json_dataframe import APARTMENTS, clean_dataset  # noqa
+from notebooks.helpers import validate_input
+from notebooks.json_dataframe import APARTMENTS, clean_dataset
 
 
 class MachineLearnModel:
@@ -245,21 +241,6 @@ class MachineLearnModel:
         # Predict
         value = int(abs(self.ml_model.predict(self.q)))
         print(f"\n-----\nExpected asking price for {address}: € {value},-.")
-
-
-def lookup_worth():
-    # Ask for type of lookup
-    prompt = "Type of listing: apartment or house? "
-    options = ["apartment", "a", "house", "h"]
-    question = validate_input(prompt, type_=str, options=options)
-
-    # Train model
-    mode = question in options[:2]
-    ML_mdl = MachineLearnModel("combination.pkl", apartment=mode)
-    ML_mdl.evaluate_model("EN", viz=False, save=True, verbose=False)
-
-    # Make prediction
-    ML_mdl.predict("predict.json")
 
 
 if __name__ == '__main__':
