@@ -65,8 +65,8 @@ def clean_dataset(filename, predict=None, verbose=False):
 
     # Get coordinates and bin into neighborhoods
     print("Please provide Google Maps API key:")
-    log_print("Fetch coordinates and bin into neighborhoods...", verbose)
     df = geolocation(df, getpass())
+    log_print("Finished geocoding.", verbose)
 
     # If in prediction apartment, don't export but return dataframe
     if predict:

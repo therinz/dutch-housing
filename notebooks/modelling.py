@@ -15,11 +15,12 @@ from notebooks.json_dataframe import APARTMENTS, clean_dataset
 # Suppress yellowbrick warning
 warnings.simplefilter("ignore")
 
+BASE = os.path.join(os.getcwd(), "data")
+
 
 class MachineLearnModel:
-    base = os.path.join(os.getcwd(), "data")
-
-    def __init__(self, filename="combination.pkl", apartment=False, verbose=False):
+    def __init__(self, filename="combination.pkl",
+                 apartment=False, verbose=False):
         # Declare variables
         self.verbose = verbose
         self.X_train = self.X_test = self.y_train = self.y_test = pd.DataFrame
@@ -27,8 +28,7 @@ class MachineLearnModel:
         self.scaled_fit = self.ml_model = None
 
         # Open file
-        self.df = pd.read_pickle(os.path.join(MachineLearnModel.base,
-                                              filename))
+        self.df = pd.read_pickle(os.path.join(BASE, filename))
 
         # Check for null values
         if any(self.df.isnull().any()):
@@ -246,3 +246,20 @@ class MachineLearnModel:
         # Predict
         value = int(abs(self.ml_model.predict(self.q)))
         print(f"\n-----\nExpected asking price for {address}: € {value},-.")
+
+        return value
+
+
+if __name__ == '__main__':
+    """Run script if directly loaded."""
+
+    BASE = os.path.join(os.pardir, "data")
+
+    # Initialize model
+    ML_mdl = MachineLearnModel("combination.pkl", apartment=True, verbose=True)
+    mdls = ["LR", "RI", "LA", "EN"
+            ]
+    for mdl in mdls:
+        ML_mdl.evaluate_model(mdl, viz=False, save=False)
+    print("Finished shaping model.")
+    #ML_mdl.predict("predict.json")

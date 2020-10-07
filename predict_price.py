@@ -47,6 +47,7 @@ JSON = os.path.join("data", "predict.json")
 def lookup_worth(verbose=False, debug=False):
     """Return predicted value of given listing."""
 
+    # Debug mode to use stored data
     if debug:
         df = pd.read_pickle(os.path.join("data", "predict.pkl"))
     else:
@@ -55,10 +56,10 @@ def lookup_worth(verbose=False, debug=False):
             os.remove(JSON)
 
         # Ask for type of lookup
-        prompt = "Whats the URL of the house? "
+        prompt = "Whats the URL of the house? \n"
         url = validate_input(prompt, type_=str, min_=10).strip(" \"\'")
 
-        # Get data from funda
+        # Set settings for crawler
         settings = {"FEEDS": {JSON: {"format": "json"}},
                     "LOG_ENABLED": True}
         if verbose:
@@ -66,33 +67,36 @@ def lookup_worth(verbose=False, debug=False):
         else:
             settings.update({"LOG_LEVEL": "WARNING"})
 
+        # Let crawler work
         process = CrawlerProcess(settings)
         process.crawl(PredictSpider, link=url)
         process.start()
 
         # Clean the data
-        df = (clean_dataset(JSON, predict=True, verbose=verbose)
-              .drop(columns=["asking_price"]))
+        df = clean_dataset(JSON, predict=True, verbose=verbose)
+
+        # Save for future debugging
         df.to_pickle(os.path.join("data", "predict.pkl"))
 
+    # Store real asking price and then delete column
+    ap = df.iloc[0]["asking_price"]
+    df = df.drop(columns=["asking_price"])
+
+    # Set mode to apartments or houses
     apartments = [col for col in df.columns
                   if col.startswith("pt") and col in APARTMENTS]
-    try:
-        mode = df[apartments].apply(any, axis=1)[0]
-    except KeyError:
-        mode = False
-    print(mode)
+    mode = df[apartments].apply(any, axis=1)[0]
 
     # Train model
     ML_mdl = MachineLearnModel(apartment=mode, verbose=verbose)
-    ML_mdl.evaluate_model("EN", viz=False, save=True)
+    ML_mdl.evaluate_model("LA", viz=False, save=True)
 
     # Make prediction
-    ML_mdl.predict(df)
+    predicted_val = ML_mdl.predict(df)
 
-    # Cleanup
-    os.remove(JSON)
+    acc = abs(100 * (ap - predicted_val) / ap)
+    print(f"Real value: {ap}. Margin: {acc:.2f} %")
 
 
 if __name__ == '__main__':
-    lookup_worth(verbose=True, debug=True)
+    lookup_worth(verbose=True, debug=False)
