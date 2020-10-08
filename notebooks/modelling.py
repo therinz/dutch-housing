@@ -9,7 +9,7 @@ from sklearn.metrics import r2_score, median_absolute_error
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 
-from json_dataframe import APARTMENTS, log_print
+from notebooks.json_dataframe import APARTMENTS, log_print
 
 # from yellowbrick.regressor import ResidualsPlot, PredictionError
 

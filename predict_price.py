@@ -7,9 +7,9 @@ import pandas as pd
 from scraping.scraping.spiders.funda_spider import value_block
 from scrapy.crawler import CrawlerProcess
 
-from helpers import validate_input, log_print
-from modelling import MachineLearnModel
-from json_dataframe import APARTMENTS, clean_dataset
+from notebooks.helpers import validate_input, log_print
+from notebooks.modelling import MachineLearnModel
+from notebooks.json_dataframe import APARTMENTS, clean_dataset
 
 
 class PredictSpider(scrapy.Spider):
