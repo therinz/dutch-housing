@@ -7,9 +7,9 @@ import pandas as pd
 from scraping.scraping.spiders.funda_spider import value_block
 from scrapy.crawler import CrawlerProcess
 
-from notebooks.helpers import validate_input, log_print
-from notebooks.modelling import MachineLearnModel
-from notebooks.json_dataframe import APARTMENTS, clean_dataset
+from helpers import validate_input, log_print
+from modelling import MachineLearnModel
+from json_dataframe import APARTMENTS, clean_dataset
 
 
 class PredictSpider(scrapy.Spider):
@@ -58,7 +58,10 @@ def lookup_worth(verbose=False, debug=False):
 
         # Ask for type of lookup
         prompt = "Whats the URL of the house? \n"
-        url = validate_input(prompt, type_=str, min_=10).strip(" \"\'")
+        url = ""
+        while "funda.nl/" not in url:
+            url = validate_input(prompt, type_=str, min_=10).strip(" \"\'")
+            prompt = "Not a valid url! Please try again: \n"
 
         # Set settings for crawler
         settings = {"FEEDS": {JSON: {"format": "json"}},
@@ -66,6 +69,7 @@ def lookup_worth(verbose=False, debug=False):
         if verbose:
             print("Retrieving data from funda.nl...")
         else:
+            print("\nHang on, doing some magic...")
             settings.update({"LOG_LEVEL": "WARNING"})
 
         # Let crawler work
@@ -112,5 +116,5 @@ def lookup_worth(verbose=False, debug=False):
 
 
 if __name__ == '__main__':
-    lookup_worth(verbose=False, debug=False)
+    lookup_worth(verbose=True, debug=True)
 

@@ -9,14 +9,14 @@ from sklearn.metrics import r2_score, median_absolute_error
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 
-from notebooks.json_dataframe import APARTMENTS, log_print
+from json_dataframe import APARTMENTS, log_print
 
 # from yellowbrick.regressor import ResidualsPlot, PredictionError
 
 # Suppress yellowbrick warning
 warnings.simplefilter("ignore")
 
-BASE = os.path.join(os.getcwd(), "data")
+BASE = os.path.join(os.pardir, "data")
 
 
 class MachineLearnModel:
@@ -50,9 +50,9 @@ class MachineLearnModel:
         # Select apartments or houses
         if apartment:
             self.df = self.df[self.df[APARTMENTS].apply(any, axis=1)]
-            log_print(f"1 split a/h: {self.df.shape[0]}", verbose)
+            log_print(f"Split before outlier func: {self.df.shape[0]}", verbose)
             self.apartments()
-            log_print(f"2 split a/h: {self.df.shape[0]}", verbose)
+            log_print(f"Split after outlier func: {self.df.shape[0]}", verbose)
         else:
             self.df = self.df[~self.df[APARTMENTS].apply(any, axis=1)]
             self.houses()
@@ -249,7 +249,7 @@ class MachineLearnModel:
 
         # Predict
         value = int(abs(self.ml_model.predict(self.q)))
-        print(f"\n-----\nExpected asking price for {address}: \n\n€ {value},-.")
+        print(f"\n-----\nExpected asking price for {address}: \n\n€ {value},-")
 
         return value
 
