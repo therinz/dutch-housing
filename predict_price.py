@@ -6,8 +6,9 @@ import scrapy
 import pandas as pd
 from scraping.scraping.spiders.funda_spider import value_block
 from scrapy.crawler import CrawlerProcess
+import streamlit as st
 
-from notebooks.helpers import validate_input
+from notebooks.helpers import validate_input, log_print
 from notebooks.modelling import MachineLearnModel
 from notebooks.json_dataframe import APARTMENTS, clean_dataset
 
@@ -48,6 +49,7 @@ def lookup_worth(verbose=False, debug=False):
     """Return predicted value of given listing."""
 
     # Debug mode to use stored data
+    log_print("Debug: on.", verbose)
     if debug:
         df = pd.read_pickle(os.path.join("data", "predict.pkl"))
     else:
@@ -86,17 +88,30 @@ def lookup_worth(verbose=False, debug=False):
     apartments = [col for col in df.columns
                   if col.startswith("pt") and col in APARTMENTS]
     mode = df[apartments].apply(any, axis=1)[0]
+    log_print("Mode: apartment" if mode else "Mode: house", verbose)
 
     # Train model
     ML_mdl = MachineLearnModel(apartment=mode, verbose=verbose)
-    ML_mdl.evaluate_model("LA", viz=False, save=True)
+    if debug:
+        mdls = [
+            # "RI",
+            "LA",
+            # "EN"
+        ]
+        for mdl in mdls:
+            ML_mdl.evaluate_model(mdl, viz=False, save=True)
+    else:
+        mdl = "lA" if mode else "RI"
+        ML_mdl.evaluate_model(mdl, viz=False, save=True)
 
     # Make prediction
     predicted_val = ML_mdl.predict(df)
 
+    # Print results
     acc = abs(100 * (ap - predicted_val) / ap)
-    print(f"Real value: {ap}. Margin: {acc:.2f} %")
+    print(f"\nReal value: {ap}. Margin: {acc:.2f} %")
 
 
 if __name__ == '__main__':
-    lookup_worth(verbose=True, debug=False)
+    lookup_worth(verbose=True, debug=True)
+

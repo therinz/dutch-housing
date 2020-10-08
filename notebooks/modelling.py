@@ -10,12 +10,17 @@ from sklearn.metrics import r2_score, median_absolute_error
 from sklearn import linear_model
 # from yellowbrick.regressor import ResidualsPlot, PredictionError
 
-from notebooks.json_dataframe import APARTMENTS, clean_dataset
+from json_dataframe import APARTMENTS, clean_dataset
 
 # Suppress yellowbrick warning
 warnings.simplefilter("ignore")
 
-BASE = os.path.join(os.getcwd(), "data")
+if __name__ == '__main__':
+    start = os.getcwd()
+else:
+    start = os.pardir
+
+BASE = os.path.join(os.pardir, "data")
 
 
 class MachineLearnModel:
@@ -184,6 +189,7 @@ class MachineLearnModel:
 
     def evaluate_model(self, model, viz=False, save=False):
         """Run ML mdl and return score"""
+
         models = {"LR": linear_model.LinearRegression,
                   "RI": linear_model.Ridge,
                   "LA": linear_model.Lasso,
@@ -198,7 +204,7 @@ class MachineLearnModel:
         ml_model.fit(self.X_train, self.y_train)
 
         if self.verbose:
-            print(f"\n-----Working on: {str(trans[model])}...-----")
+            print(f"\n-----\nWorking on: {str(trans[model])}...")
 
         """if viz:
             # Create residuals plot
@@ -215,10 +221,10 @@ class MachineLearnModel:
 
             # Print to screen
             size = self.X_train.shape[0] + self.X_test.shape[0]
-            print(f"Total rows used: {size}"
+            print(f"Total rows used for training: {size}"
                   f"\nR2 for training set: {train_r2:.3f}."
-                  f"\nMean absolute error of {int(acc)}."
-                  f"\nR2 score for test set: {test_r2:.3f}\n---")
+                  f"\nMean absolute error: {int(acc)}."
+                  f"\nR2 score for test set: {test_r2:.3f}")
 
         # Save the model for prediction later
         if save:
@@ -228,7 +234,7 @@ class MachineLearnModel:
         """Predict price based on characteristics."""
 
         if self.verbose:
-            print("\nPredicting new data...")
+            print("\n-----\nPredicting new data...")
 
         # Open file and remove asking_price
         self.q = df
@@ -262,4 +268,3 @@ if __name__ == '__main__':
     for mdl in mdls:
         ML_mdl.evaluate_model(mdl, viz=False, save=False)
     print("Finished shaping model.")
-    #ML_mdl.predict("predict.json")
