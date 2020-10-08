@@ -1,0 +1,12 @@
+Apartment
+
+Total rows used for training: 2433
+R2 for training set: 0.890.
+Mean absolute error: 51950.
+R2 score for test set: 0.841
+
+House
+Total rows used for training: 427
+R2 for training set: 0.948.
+Mean absolute error: 106563.
+R2 score for test set: 0.866

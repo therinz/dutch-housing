@@ -16,7 +16,7 @@ from notebooks.helpers import garden, validate_input, contains_to_binary
 BASE = os.path.join(os.getcwd(), "data")
 APARTMENTS = ["pt_bovenwoning", "pt_benedenwoning", "pt_penthouse",
               "pt_corridorflat", "pt_portiekwoning"]
-temp = ""
+temp = "AIzaSyCR9Xc5_uEwZ4hGlsBleOropR317XLgzXw"
 
 
 def clean_dataset(filename, predict=None, verbose=False):
