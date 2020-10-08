@@ -6,7 +6,6 @@ import scrapy
 import pandas as pd
 from scraping.scraping.spiders.funda_spider import value_block
 from scrapy.crawler import CrawlerProcess
-import streamlit as st
 
 from notebooks.helpers import validate_input, log_print
 from notebooks.modelling import MachineLearnModel
@@ -101,7 +100,7 @@ def lookup_worth(verbose=False, debug=False):
         for mdl in mdls:
             ML_mdl.evaluate_model(mdl, viz=False, save=True)
     else:
-        mdl = "lA" if mode else "RI"
+        mdl = "LA" if mode else "RI"
         ML_mdl.evaluate_model(mdl, viz=False, save=True)
 
     # Make prediction
@@ -109,9 +108,9 @@ def lookup_worth(verbose=False, debug=False):
 
     # Print results
     acc = abs(100 * (ap - predicted_val) / ap)
-    print(f"\nReal value: {ap}. Margin: {acc:.2f} %")
+    print(f"\nReal value: € {ap}. Margin: {acc:.2f} %")
 
 
 if __name__ == '__main__':
-    lookup_worth(verbose=True, debug=True)
+    lookup_worth(verbose=False, debug=False)
 

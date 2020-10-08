@@ -8,15 +8,15 @@ import geopandas as gpd
 import numpy as np
 import pandas as pd
 
-from helpers import convert_elapsed_time, extract_num, build_era
-from helpers import listing_type, roof_description, log_print
-from helpers import garden, validate_input, contains_to_binary
+from notebooks.helpers import convert_elapsed_time, extract_num, build_era
+from notebooks.helpers import listing_type, roof_description, log_print
+from notebooks.helpers import garden, validate_input, contains_to_binary
 
 # Globals
 BASE = os.path.join(os.getcwd(), "data")
 APARTMENTS = ["pt_bovenwoning", "pt_benedenwoning", "pt_penthouse",
               "pt_corridorflat", "pt_portiekwoning"]
-temp =
+temp = ""
 
 
 def clean_dataset(filename, predict=None, verbose=False):
@@ -64,7 +64,7 @@ def clean_dataset(filename, predict=None, verbose=False):
         return print("Error: Dataframe contains null values.")
 
     # Get coordinates and bin into neighborhoods
-    print("Please provide Google Maps API key:")
+    #print("Please provide Google Maps API key:")
     df = geolocation(df, temp)
     log_print("Finished geocoding.", verbose)
 

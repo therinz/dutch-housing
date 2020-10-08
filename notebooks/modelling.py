@@ -4,23 +4,19 @@ import os
 import warnings
 
 import pandas as pd
+from sklearn import linear_model
+from sklearn.metrics import r2_score, median_absolute_error
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
-from sklearn.metrics import r2_score, median_absolute_error
-from sklearn import linear_model
-# from yellowbrick.regressor import ResidualsPlot, PredictionError
 
-from json_dataframe import APARTMENTS, clean_dataset
+from notebooks.json_dataframe import APARTMENTS, log_print
+
+# from yellowbrick.regressor import ResidualsPlot, PredictionError
 
 # Suppress yellowbrick warning
 warnings.simplefilter("ignore")
 
-if __name__ == '__main__':
-    start = os.getcwd()
-else:
-    start = os.pardir
-
-BASE = os.path.join(os.pardir, "data")
+BASE = os.path.join(os.getcwd(), "data")
 
 
 class MachineLearnModel:
@@ -34,6 +30,7 @@ class MachineLearnModel:
 
         # Open file
         self.df = pd.read_pickle(os.path.join(BASE, filename))
+        log_print(f"total: {self.df.shape[0]}", verbose)
 
         # Check for null values
         if any(self.df.isnull().any()):
@@ -53,7 +50,9 @@ class MachineLearnModel:
         # Select apartments or houses
         if apartment:
             self.df = self.df[self.df[APARTMENTS].apply(any, axis=1)]
+            log_print(f"1 split a/h: {self.df.shape[0]}", verbose)
             self.apartments()
+            log_print(f"2 split a/h: {self.df.shape[0]}", verbose)
         else:
             self.df = self.df[~self.df[APARTMENTS].apply(any, axis=1)]
             self.houses()
@@ -203,8 +202,7 @@ class MachineLearnModel:
         ml_model = models[model]()
         ml_model.fit(self.X_train, self.y_train)
 
-        if self.verbose:
-            print(f"\n-----\nWorking on: {str(trans[model])}...")
+        log_print(f"\n-----\nWorking on: {str(trans[model])}...", self.verbose)
 
         """if viz:
             # Create residuals plot
@@ -220,7 +218,7 @@ class MachineLearnModel:
             test_r2 = r2_score(self.y_test, predictions)
 
             # Print to screen
-            size = self.X_train.shape[0] + self.X_test.shape[0]
+            size = self.X_train.shape[0]
             print(f"Total rows used for training: {size}"
                   f"\nR2 for training set: {train_r2:.3f}."
                   f"\nMean absolute error: {int(acc)}."
@@ -251,7 +249,7 @@ class MachineLearnModel:
 
         # Predict
         value = int(abs(self.ml_model.predict(self.q)))
-        print(f"\n-----\nExpected asking price for {address}: € {value},-.")
+        print(f"\n-----\nExpected asking price for {address}: \n\n€ {value},-.")
 
         return value
 
