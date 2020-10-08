@@ -16,7 +16,7 @@ from notebooks.json_dataframe import APARTMENTS, log_print
 # Suppress yellowbrick warning
 warnings.simplefilter("ignore")
 
-BASE = os.path.join(os.pardir, "data")
+BASE = os.path.join(os.getcwd(), "data")
 
 
 class MachineLearnModel:
