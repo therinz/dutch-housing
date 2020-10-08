@@ -1,0 +1,2544 @@
+<?xml version='1.0' encoding='utf-8' ?>
+
+<!-- build 20202.20.0721.1350                               -->
+<workbook original-version='18.1' source-build='2020.2.4 (20202.20.0721.1350)' source-platform='win' version='18.1' xmlns:user='http://www.tableausoftware.com/xml/user'>
+  <document-format-change-manifest>
+    <MapboxVectorStylesAndLayers />
+    <_.fcp.MarkAnimation.true...MarkAnimation />
+    <_.fcp.ObjectModelEncapsulateLegacy.true...ObjectModelEncapsulateLegacy />
+    <_.fcp.ObjectModelTableType.true...ObjectModelTableType />
+    <_.fcp.SchemaViewerObjectModel.true...SchemaViewerObjectModel />
+    <SheetIdentifierTracking />
+    <SpatialFileLayer />
+    <WindowsPersistSimpleIdentifiers />
+  </document-format-change-manifest>
+  <preferences>
+    <preference name='ui.encoding.shelf.height' value='24' />
+    <preference name='ui.shelf.height' value='26' />
+  </preferences>
+  <datasources>
+    <datasource caption='ams_neighborhoods' inline='true' name='federated.1kguhi80oczmp51bwi6ap00mjkpz' version='18.1'>
+      <connection class='federated'>
+        <named-connections>
+          <named-connection caption='ams_neighborhoods' name='ogrdirect.1uln8t50k57h7r14mj1pp0gvrk06'>
+            <connection class='ogrdirect' directory='C:/Users/Rinze/Documents/ironhack/git/dutch-housing/data/geo' filename='ams_neighborhoods.shp' ogr-grid-shift-folder='C:\Program Files\Tableau\Tableau 2020.2\local\proj4' password='' server='' tablename='' />
+          </named-connection>
+          <named-connection caption='combi_addresses' name='ogrdirect.0pn6ze11s4ks3j1c62jsl01ummc3'>
+            <connection class='ogrdirect' directory='C:/Users/Rinze/Documents/ironhack/git/dutch-housing/data/geo' filename='combi_addresses.shp' ogr-grid-shift-folder='C:\Program Files\Tableau\Tableau 2020.2\local\proj4' password='' server='' tablename='' />
+          </named-connection>
+        </named-connections>
+        <_.fcp.ObjectModelEncapsulateLegacy.false...relation join='full' type='join'>
+          <clause type='join'>
+            <expression op='Intersects'>
+              <expression op='[ams_neighborhoods.shp].[Geometry]' />
+              <expression op='[combi_addresses.shp].[Geometry]' />
+            </expression>
+          </clause>
+          <relation connection='ogrdirect.1uln8t50k57h7r14mj1pp0gvrk06' name='ams_neighborhoods.shp' table='[ams_neighborhoods.shp]' type='table'>
+            <columns>
+              <column datatype='string' name='Buurt_code' ordinal='0' />
+              <column datatype='string' name='Buurt' ordinal='1' />
+              <column datatype='string' name='Buurtcombi' ordinal='2' />
+              <column datatype='string' name='Stadsdeel_' ordinal='3' />
+              <column datatype='real' name='Opp_m2' ordinal='4' />
+              <column datatype='integer' name='FID' ordinal='5' />
+              <column datatype='spatial' name='Geometry' ordinal='6' />
+            </columns>
+          </relation>
+          <relation connection='ogrdirect.0pn6ze11s4ks3j1c62jsl01ummc3' name='combi_addresses.shp' table='[combi_addresses.shp]' type='table'>
+            <columns>
+              <column datatype='integer' name='asking_pri' ordinal='0' />
+              <column datatype='string' name='address' ordinal='1' />
+              <column datatype='spatial' name='Geometry' ordinal='2' />
+            </columns>
+          </relation>
+        </_.fcp.ObjectModelEncapsulateLegacy.false...relation>
+        <_.fcp.ObjectModelEncapsulateLegacy.true...relation join='full' type='join'>
+          <clause type='join'>
+            <expression op='Intersects'>
+              <expression op='[ams_neighborhoods.shp].[Geometry]' />
+              <expression op='[combi_addresses.shp].[Geometry]' />
+            </expression>
+          </clause>
+          <relation connection='ogrdirect.1uln8t50k57h7r14mj1pp0gvrk06' name='ams_neighborhoods.shp' table='[ams_neighborhoods.shp]' type='table'>
+            <columns>
+              <column datatype='string' name='Buurt_code' ordinal='0' />
+              <column datatype='string' name='Buurt' ordinal='1' />
+              <column datatype='string' name='Buurtcombi' ordinal='2' />
+              <column datatype='string' name='Stadsdeel_' ordinal='3' />
+              <column datatype='real' name='Opp_m2' ordinal='4' />
+              <column datatype='integer' name='FID' ordinal='5' />
+              <column datatype='spatial' name='Geometry' ordinal='6' />
+            </columns>
+          </relation>
+          <relation connection='ogrdirect.0pn6ze11s4ks3j1c62jsl01ummc3' name='combi_addresses.shp' table='[combi_addresses.shp]' type='table'>
+            <columns>
+              <column datatype='integer' name='asking_pri' ordinal='0' />
+              <column datatype='string' name='address' ordinal='1' />
+              <column datatype='spatial' name='Geometry' ordinal='2' />
+            </columns>
+          </relation>
+        </_.fcp.ObjectModelEncapsulateLegacy.true...relation>
+        <cols>
+          <map key='[Buurt]' value='[ams_neighborhoods.shp].[Buurt]' />
+          <map key='[Buurt_code]' value='[ams_neighborhoods.shp].[Buurt_code]' />
+          <map key='[Buurtcombi]' value='[ams_neighborhoods.shp].[Buurtcombi]' />
+          <map key='[FID]' value='[ams_neighborhoods.shp].[FID]' />
+          <map key='[Geometry (combi_addresses.shp)]' value='[combi_addresses.shp].[Geometry]' />
+          <map key='[Geometry]' value='[ams_neighborhoods.shp].[Geometry]' />
+          <map key='[Opp_m2]' value='[ams_neighborhoods.shp].[Opp_m2]' />
+          <map key='[Stadsdeel_]' value='[ams_neighborhoods.shp].[Stadsdeel_]' />
+          <map key='[address]' value='[combi_addresses.shp].[address]' />
+          <map key='[asking_pri]' value='[combi_addresses.shp].[asking_pri]' />
+        </cols>
+        <metadata-records>
+          <metadata-record class='column'>
+            <remote-name>Buurt_code</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[Buurt_code]</local-name>
+            <parent-name>[ams_neighborhoods.shp]</parent-name>
+            <remote-alias>Buurt_code</remote-alias>
+            <ordinal>0</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <collation flag='0' name='binary' />
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[ams_neighborhoods.shp_FC4B585CDB2A44DA9830B33D8A5E2E7C]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>Buurt</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[Buurt]</local-name>
+            <parent-name>[ams_neighborhoods.shp]</parent-name>
+            <remote-alias>Buurt</remote-alias>
+            <ordinal>1</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <collation flag='0' name='binary' />
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[ams_neighborhoods.shp_FC4B585CDB2A44DA9830B33D8A5E2E7C]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>Buurtcombi</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[Buurtcombi]</local-name>
+            <parent-name>[ams_neighborhoods.shp]</parent-name>
+            <remote-alias>Buurtcombi</remote-alias>
+            <ordinal>2</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <collation flag='0' name='binary' />
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[ams_neighborhoods.shp_FC4B585CDB2A44DA9830B33D8A5E2E7C]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>Stadsdeel_</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[Stadsdeel_]</local-name>
+            <parent-name>[ams_neighborhoods.shp]</parent-name>
+            <remote-alias>Stadsdeel_</remote-alias>
+            <ordinal>3</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <collation flag='0' name='binary' />
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[ams_neighborhoods.shp_FC4B585CDB2A44DA9830B33D8A5E2E7C]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>Opp_m2</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[Opp_m2]</local-name>
+            <parent-name>[ams_neighborhoods.shp]</parent-name>
+            <remote-alias>Opp_m2</remote-alias>
+            <ordinal>4</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[ams_neighborhoods.shp_FC4B585CDB2A44DA9830B33D8A5E2E7C]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>FID</remote-name>
+            <remote-type>3</remote-type>
+            <local-name>[FID]</local-name>
+            <parent-name>[ams_neighborhoods.shp]</parent-name>
+            <remote-alias>FID</remote-alias>
+            <ordinal>5</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[ams_neighborhoods.shp_FC4B585CDB2A44DA9830B33D8A5E2E7C]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>Geometry</remote-name>
+            <remote-type>8</remote-type>
+            <local-name>[Geometry]</local-name>
+            <parent-name>[ams_neighborhoods.shp]</parent-name>
+            <remote-alias>Geometry</remote-alias>
+            <ordinal>6</ordinal>
+            <local-type>spatial</local-type>
+            <aggregation>Collect</aggregation>
+            <contains-null>true</contains-null>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[ams_neighborhoods.shp_FC4B585CDB2A44DA9830B33D8A5E2E7C]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>asking_pri</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[asking_pri]</local-name>
+            <parent-name>[combi_addresses.shp]</parent-name>
+            <remote-alias>asking_pri</remote-alias>
+            <ordinal>7</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[ams_neighborhoods.shp_FC4B585CDB2A44DA9830B33D8A5E2E7C]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>address</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[address]</local-name>
+            <parent-name>[combi_addresses.shp]</parent-name>
+            <remote-alias>address</remote-alias>
+            <ordinal>8</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <collation flag='0' name='binary' />
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[ams_neighborhoods.shp_FC4B585CDB2A44DA9830B33D8A5E2E7C]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>Geometry</remote-name>
+            <remote-type>8</remote-type>
+            <local-name>[Geometry (combi_addresses.shp)]</local-name>
+            <parent-name>[combi_addresses.shp]</parent-name>
+            <remote-alias>Geometry</remote-alias>
+            <ordinal>9</ordinal>
+            <local-type>spatial</local-type>
+            <aggregation>Collect</aggregation>
+            <contains-null>true</contains-null>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[ams_neighborhoods.shp_FC4B585CDB2A44DA9830B33D8A5E2E7C]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+        </metadata-records>
+      </connection>
+      <aliases enabled='yes' />
+      <column datatype='string' name='[Buurt]' role='dimension' type='nominal' />
+      <_.fcp.ObjectModelTableType.true...column caption='ams_neighborhoods.shp' datatype='table' name='[__tableau_internal_object_id__].[ams_neighborhoods.shp_FC4B585CDB2A44DA9830B33D8A5E2E7C]' role='measure' type='quantitative' />
+      <column-instance column='[Buurt]' derivation='None' name='[none:Buurt:nk]' pivot='key' type='nominal' />
+      <layout _.fcp.SchemaViewerObjectModel.false...dim-percentage='0.5' _.fcp.SchemaViewerObjectModel.false...measure-percentage='0.4' dim-ordering='alphabetic' measure-ordering='alphabetic' show-structure='true' />
+      <style>
+        <style-rule element='mark'>
+          <encoding attr='color' field='[none:Buurt:nk]' type='palette'>
+            <map to='#499894'>
+              <bucket>&quot;Amstel III deel A/B Zuid&quot;</bucket>
+            </map>
+            <map to='#499894'>
+              <bucket>&quot;BG-terrein e.o.&quot;</bucket>
+            </map>
+            <map to='#499894'>
+              <bucket>&quot;Banpleinbuurt&quot;</bucket>
+            </map>
+            <map to='#499894'>
+              <bucket>&quot;Buiteneiland&quot;</bucket>
+            </map>
+            <map to='#499894'>
+              <bucket>&quot;Calandlaan/Lelylaan&quot;</bucket>
+            </map>
+            <map to='#499894'>
+              <bucket>&quot;De Eenhoorn&quot;</bucket>
+            </map>
+            <map to='#499894'>
+              <bucket>&quot;Duivelseiland&quot;</bucket>
+            </map>
+            <map to='#499894'>
+              <bucket>&quot;Frederik Hendrikbuurt Zuidoost&quot;</bucket>
+            </map>
+            <map to='#499894'>
+              <bucket>&quot;Grunder/Koningshoef&quot;</bucket>
+            </map>
+            <map to='#499894'>
+              <bucket>&quot;Hondecoeterbuurt&quot;</bucket>
+            </map>
+            <map to='#499894'>
+              <bucket>&quot;K-buurt Zuidwest&quot;</bucket>
+            </map>
+            <map to='#499894'>
+              <bucket>&quot;Landlust Noord&quot;</bucket>
+            </map>
+            <map to='#499894'>
+              <bucket>&quot;Marcanti&quot;</bucket>
+            </map>
+            <map to='#499894'>
+              <bucket>&quot;Minervabuurt Midden&quot;</bucket>
+            </map>
+            <map to='#499894'>
+              <bucket>&quot;Nintemanterrein&quot;</bucket>
+            </map>
+            <map to='#499894'>
+              <bucket>&quot;Orteliusbuurt Midden&quot;</bucket>
+            </map>
+            <map to='#499894'>
+              <bucket>&quot;Parooldriehoek&quot;</bucket>
+            </map>
+            <map to='#499894'>
+              <bucket>&quot;Rembrandtpleinbuurt&quot;</bucket>
+            </map>
+            <map to='#499894'>
+              <bucket>&quot;Schellingwoude West&quot;</bucket>
+            </map>
+            <map to='#499894'>
+              <bucket>&quot;Sportpark Middenmeer Zuid&quot;</bucket>
+            </map>
+            <map to='#499894'>
+              <bucket>&quot;Tuindorp Nieuwendam West&quot;</bucket>
+            </map>
+            <map to='#499894'>
+              <bucket>&quot;Vivaldi&quot;</bucket>
+            </map>
+            <map to='#499894'>
+              <bucket>&quot;Westerdokseiland&quot;</bucket>
+            </map>
+            <map to='#499894'>
+              <bucket>&quot;Zeeburgereiland Zuidwest&quot;</bucket>
+            </map>
+            <map to='#4e79a7'>
+              <bucket>&quot;Aalsmeerwegbuurt Oost&quot;</bucket>
+            </map>
+            <map to='#4e79a7'>
+              <bucket>&quot;Anjeliersbuurt Noord&quot;</bucket>
+            </map>
+            <map to='#4e79a7'>
+              <bucket>&quot;Bedrijventerrein Sloterdijk I&quot;</bucket>
+            </map>
+            <map to='#4e79a7'>
+              <bucket>&quot;Bretten Oost&quot;</bucket>
+            </map>
+            <map to='#4e79a7'>
+              <bucket>&quot;Buurt 5 Noord&quot;</bucket>
+            </map>
+            <map to='#4e79a7'>
+              <bucket>&quot;D-buurt&quot;</bucket>
+            </map>
+            <map to='#4e79a7'>
+              <bucket>&quot;Den Texbuurt&quot;</bucket>
+            </map>
+            <map to='#4e79a7'>
+              <bucket>&quot;F-buurt&quot;</bucket>
+            </map>
+            <map to='#4e79a7'>
+              <bucket>&quot;Gein Zuidwest&quot;</bucket>
+            </map>
+            <map to='#4e79a7'>
+              <bucket>&quot;Hemonybuurt&quot;</bucket>
+            </map>
+            <map to='#4e79a7'>
+              <bucket>&quot;Jan Maijenbuurt&quot;</bucket>
+            </map>
+            <map to='#4e79a7'>
+              <bucket>&quot;Kop Zeedijk&quot;</bucket>
+            </map>
+            <map to='#4e79a7'>
+              <bucket>&quot;Linnaeusparkbuurt&quot;</bucket>
+            </map>
+            <map to='#4e79a7'>
+              <bucket>&quot;Mercatorpark&quot;</bucket>
+            </map>
+            <map to='#4e79a7'>
+              <bucket>&quot;Nieuwe Kerk e.o.&quot;</bucket>
+            </map>
+            <map to='#4e79a7'>
+              <bucket>&quot;Oosterdokseiland&quot;</bucket>
+            </map>
+            <map to='#4e79a7'>
+              <bucket>&quot;Overhoeks&quot;</bucket>
+            </map>
+            <map to='#4e79a7'>
+              <bucket>&quot;Rapenburg&quot;</bucket>
+            </map>
+            <map to='#4e79a7'>
+              <bucket>&quot;Sarphatiparkbuurt&quot;</bucket>
+            </map>
+            <map to='#4e79a7'>
+              <bucket>&quot;Spaarndammerbuurt Midden&quot;</bucket>
+            </map>
+            <map to='#4e79a7'>
+              <bucket>&quot;Teleport&quot;</bucket>
+            </map>
+            <map to='#4e79a7'>
+              <bucket>&quot;Van der Kunbuurt&quot;</bucket>
+            </map>
+            <map to='#4e79a7'>
+              <bucket>&quot;Waterloopleinbuurt&quot;</bucket>
+            </map>
+            <map to='#4e79a7'>
+              <bucket>&quot;Wittenburg&quot;</bucket>
+            </map>
+            <map to='#4e79a7'>
+              <bucket>&quot;Zwarte Gouw&quot;</bucket>
+            </map>
+            <map to='#59a14f'>
+              <bucket>&quot;Alfa-driehoek&quot;</bucket>
+            </map>
+            <map to='#59a14f'>
+              <bucket>&quot;Banne Noordoost&quot;</bucket>
+            </map>
+            <map to='#59a14f'>
+              <bucket>&quot;Bellamybuurt Noord&quot;</bucket>
+            </map>
+            <map to='#59a14f'>
+              <bucket>&quot;Buiksloterdijk West&quot;</bucket>
+            </map>
+            <map to='#59a14f'>
+              <bucket>&quot;Buurt 8&quot;</bucket>
+            </map>
+            <map to='#59a14f'>
+              <bucket>&quot;Dapperbuurt Zuid&quot;</bucket>
+            </map>
+            <map to='#59a14f'>
+              <bucket>&quot;Dorp Driemond&quot;</bucket>
+            </map>
+            <map to='#59a14f'>
+              <bucket>&quot;Flevopark&quot;</bucket>
+            </map>
+            <map to='#59a14f'>
+              <bucket>&quot;Geuzenhofbuurt&quot;</bucket>
+            </map>
+            <map to='#59a14f'>
+              <bucket>&quot;Hoge Dijk&quot;</bucket>
+            </map>
+            <map to='#59a14f'>
+              <bucket>&quot;John Franklinbuurt&quot;</bucket>
+            </map>
+            <map to='#59a14f'>
+              <bucket>&quot;Kromme Mijdrechtbuurt&quot;</bucket>
+            </map>
+            <map to='#59a14f'>
+              <bucket>&quot;Louis Crispijnbuurt&quot;</bucket>
+            </map>
+            <map to='#59a14f'>
+              <bucket>&quot;Middeneiland Zuidoost&quot;</bucket>
+            </map>
+            <map to='#59a14f'>
+              <bucket>&quot;Nieuwendammerdijk Zuid&quot;</bucket>
+            </map>
+            <map to='#59a14f'>
+              <bucket>&quot;Oosterparkbuurt Zuidwest&quot;</bucket>
+            </map>
+            <map to='#59a14f'>
+              <bucket>&quot;Papaverweg e.o.&quot;</bucket>
+            </map>
+            <map to='#59a14f'>
+              <bucket>&quot;Reigersbos Noord&quot;</bucket>
+            </map>
+            <map to='#59a14f'>
+              <bucket>&quot;Scheldebuurt Oost&quot;</bucket>
+            </map>
+            <map to='#59a14f'>
+              <bucket>&quot;Spaarndammerbuurt Zuidwest&quot;</bucket>
+            </map>
+            <map to='#59a14f'>
+              <bucket>&quot;Trompbuurt&quot;</bucket>
+            </map>
+            <map to='#59a14f'>
+              <bucket>&quot;Velserpolder West&quot;</bucket>
+            </map>
+            <map to='#59a14f'>
+              <bucket>&quot;Werengouw Midden&quot;</bucket>
+            </map>
+            <map to='#59a14f'>
+              <bucket>&quot;Zeeburgerdijk Oost&quot;</bucket>
+            </map>
+            <map to='#79706e'>
+              <bucket>&quot;Amstelkwartier Noord&quot;</bucket>
+            </map>
+            <map to='#79706e'>
+              <bucket>&quot;Bedrijvengebied Cruquiusweg&quot;</bucket>
+            </map>
+            <map to='#79706e'>
+              <bucket>&quot;Bijlmerpark West&quot;</bucket>
+            </map>
+            <map to='#79706e'>
+              <bucket>&quot;Buitenveldert Zuidoost&quot;</bucket>
+            </map>
+            <map to='#79706e'>
+              <bucket>&quot;Columbusplein e.o.&quot;</bucket>
+            </map>
+            <map to='#79706e'>
+              <bucket>&quot;De Omval&quot;</bucket>
+            </map>
+            <map to='#79706e'>
+              <bucket>&quot;Eendrachtspark&quot;</bucket>
+            </map>
+            <map to='#79706e'>
+              <bucket>&quot;G-buurt Oost&quot;</bucket>
+            </map>
+            <map to='#79706e'>
+              <bucket>&quot;Harmoniehofbuurt&quot;</bucket>
+            </map>
+            <map to='#79706e'>
+              <bucket>&quot;Houthavens West&quot;</bucket>
+            </map>
+            <map to='#79706e'>
+              <bucket>&quot;Kantershof&quot;</bucket>
+            </map>
+            <map to='#79706e'>
+              <bucket>&quot;Legmeerpleinbuurt&quot;</bucket>
+            </map>
+            <map to='#79706e'>
+              <bucket>&quot;Markengouw Noord&quot;</bucket>
+            </map>
+            <map to='#79706e'>
+              <bucket>&quot;Museumplein&quot;</bucket>
+            </map>
+            <map to='#79706e'>
+              <bucket>&quot;Noordoever Sloterplas&quot;</bucket>
+            </map>
+            <map to='#79706e'>
+              <bucket>&quot;Osdorp Midden Zuid&quot;</bucket>
+            </map>
+            <map to='#79706e'>
+              <bucket>&quot;Plan van Gool&quot;</bucket>
+            </map>
+            <map to='#79706e'>
+              <bucket>&quot;Rieteiland Oost&quot;</bucket>
+            </map>
+            <map to='#79706e'>
+              <bucket>&quot;Science Park Noord&quot;</bucket>
+            </map>
+            <map to='#79706e'>
+              <bucket>&quot;Staalmanbuurt&quot;</bucket>
+            </map>
+            <map to='#79706e'>
+              <bucket>&quot;Twiske West&quot;</bucket>
+            </map>
+            <map to='#79706e'>
+              <bucket>&quot;Vogeltjeswei&quot;</bucket>
+            </map>
+            <map to='#79706e'>
+              <bucket>&quot;Westhaven Zuid&quot;</bucket>
+            </map>
+            <map to='#79706e'>
+              <bucket>&quot;Zuidas Zuid&quot;</bucket>
+            </map>
+            <map to='#86bcb6'>
+              <bucket>&quot;Amstel III deel C/D Noord&quot;</bucket>
+            </map>
+            <map to='#86bcb6'>
+              <bucket>&quot;Beatrixpark&quot;</bucket>
+            </map>
+            <map to='#86bcb6'>
+              <bucket>&quot;Bijlmermuseum Noord&quot;</bucket>
+            </map>
+            <map to='#86bcb6'>
+              <bucket>&quot;Buitenveldert Midden Zuid&quot;</bucket>
+            </map>
+            <map to='#86bcb6'>
+              <bucket>&quot;Centrumeiland&quot;</bucket>
+            </map>
+            <map to='#86bcb6'>
+              <bucket>&quot;De Heining&quot;</bucket>
+            </map>
+            <map to='#86bcb6'>
+              <bucket>&quot;Durgerdam&quot;</bucket>
+            </map>
+            <map to='#86bcb6'>
+              <bucket>&quot;Frederik Hendrikbuurt Zuidwest&quot;</bucket>
+            </map>
+            <map to='#86bcb6'>
+              <bucket>&quot;Haarlemmerbuurt Oost&quot;</bucket>
+            </map>
+            <map to='#86bcb6'>
+              <bucket>&quot;Hoofdcentrum Zuidoost&quot;</bucket>
+            </map>
+            <map to='#86bcb6'>
+              <bucket>&quot;Kadijken&quot;</bucket>
+            </map>
+            <map to='#86bcb6'>
+              <bucket>&quot;Landlust Zuid&quot;</bucket>
+            </map>
+            <map to='#86bcb6'>
+              <bucket>&quot;Marine-Etablissement&quot;</bucket>
+            </map>
+            <map to='#86bcb6'>
+              <bucket>&quot;Minervabuurt Noord&quot;</bucket>
+            </map>
+            <map to='#86bcb6'>
+              <bucket>&quot;Noorder IJplas&quot;</bucket>
+            </map>
+            <map to='#86bcb6'>
+              <bucket>&quot;Orteliusbuurt Noord&quot;</bucket>
+            </map>
+            <map to='#86bcb6'>
+              <bucket>&quot;Passeerdersgrachtbuurt&quot;</bucket>
+            </map>
+            <map to='#86bcb6'>
+              <bucket>&quot;RI Oost terrein&quot;</bucket>
+            </map>
+            <map to='#86bcb6'>
+              <bucket>&quot;Schinkelbuurt Noord&quot;</bucket>
+            </map>
+            <map to='#86bcb6'>
+              <bucket>&quot;Sportpark Voorland&quot;</bucket>
+            </map>
+            <map to='#86bcb6'>
+              <bucket>&quot;Tuindorp Oostzaan Oost&quot;</bucket>
+            </map>
+            <map to='#86bcb6'>
+              <bucket>&quot;Vliegenbos&quot;</bucket>
+            </map>
+            <map to='#86bcb6'>
+              <bucket>&quot;Westergasfabriek&quot;</bucket>
+            </map>
+            <map to='#86bcb6'>
+              <bucket>&quot;Zeeheldenbuurt&quot;</bucket>
+            </map>
+            <map to='#8cd17d'>
+              <bucket>&quot;AMC&quot;</bucket>
+            </map>
+            <map to='#8cd17d'>
+              <bucket>&quot;Banne Noordwest&quot;</bucket>
+            </map>
+            <map to='#8cd17d'>
+              <bucket>&quot;Bellamybuurt Zuid&quot;</bucket>
+            </map>
+            <map to='#8cd17d'>
+              <bucket>&quot;Buiksloterham&quot;</bucket>
+            </map>
+            <map to='#8cd17d'>
+              <bucket>&quot;Buurt 9&quot;</bucket>
+            </map>
+            <map to='#8cd17d'>
+              <bucket>&quot;De Aker Oost&quot;</bucket>
+            </map>
+            <map to='#8cd17d'>
+              <bucket>&quot;Dorp Sloten&quot;</bucket>
+            </map>
+            <map to='#8cd17d'>
+              <bucket>&quot;Frankendael&quot;</bucket>
+            </map>
+            <map to='#8cd17d'>
+              <bucket>&quot;Gibraltarbuurt&quot;</bucket>
+            </map>
+            <map to='#8cd17d'>
+              <bucket>&quot;Holendrecht Oost&quot;</bucket>
+            </map>
+            <map to='#8cd17d'>
+              <bucket>&quot;Julianapark&quot;</bucket>
+            </map>
+            <map to='#8cd17d'>
+              <bucket>&quot;L-buurt&quot;</bucket>
+            </map>
+            <map to='#8cd17d'>
+              <bucket>&quot;Lucas/Andreasziekenhuis e.o.&quot;</bucket>
+            </map>
+            <map to='#8cd17d'>
+              <bucket>&quot;Middeneiland Zuidwest&quot;</bucket>
+            </map>
+            <map to='#8cd17d'>
+              <bucket>&quot;Nieuwendammmerdijk West&quot;</bucket>
+            </map>
+            <map to='#8cd17d'>
+              <bucket>&quot;Oostoever Sloterplas&quot;</bucket>
+            </map>
+            <map to='#8cd17d'>
+              <bucket>&quot;Paramariboplein e.o.&quot;</bucket>
+            </map>
+            <map to='#8cd17d'>
+              <bucket>&quot;Reigersbos Zuid&quot;</bucket>
+            </map>
+            <map to='#8cd17d'>
+              <bucket>&quot;Scheldebuurt West&quot;</bucket>
+            </map>
+            <map to='#8cd17d'>
+              <bucket>&quot;Spiegelbuurt&quot;</bucket>
+            </map>
+            <map to='#8cd17d'>
+              <bucket>&quot;Tuindorp Amstelstation&quot;</bucket>
+            </map>
+            <map to='#8cd17d'>
+              <bucket>&quot;Veluwebuurt&quot;</bucket>
+            </map>
+            <map to='#8cd17d'>
+              <bucket>&quot;Werengouw Noord&quot;</bucket>
+            </map>
+            <map to='#8cd17d'>
+              <bucket>&quot;Zeeburgereiland Noordoost&quot;</bucket>
+            </map>
+            <map to='#9d7660'>
+              <bucket>&quot;Amsterdamse Poort&quot;</bucket>
+            </map>
+            <map to='#9d7660'>
+              <bucket>&quot;Bedrijventerrein Nieuwendammerdijk&quot;</bucket>
+            </map>
+            <map to='#9d7660'>
+              <bucket>&quot;Borneo&quot;</bucket>
+            </map>
+            <map to='#9d7660'>
+              <bucket>&quot;Buurt 3&quot;</bucket>
+            </map>
+            <map to='#9d7660'>
+              <bucket>&quot;Cremerbuurt West&quot;</bucket>
+            </map>
+            <map to='#9d7660'>
+              <bucket>&quot;Delflandpleinbuurt Oost&quot;</bucket>
+            </map>
+            <map to='#9d7660'>
+              <bucket>&quot;Erasmusparkbuurt Oost&quot;</bucket>
+            </map>
+            <map to='#9d7660'>
+              <bucket>&quot;Gein Noordoost&quot;</bucket>
+            </map>
+            <map to='#9d7660'>
+              <bucket>&quot;Helmersbuurt Oost&quot;</bucket>
+            </map>
+            <map to='#9d7660'>
+              <bucket>&quot;Jacob Geelbuurt&quot;</bucket>
+            </map>
+            <map to='#9d7660'>
+              <bucket>&quot;Kolenkitbuurt Zuid&quot;</bucket>
+            </map>
+            <map to='#9d7660'>
+              <bucket>&quot;Leidsegracht Zuid&quot;</bucket>
+            </map>
+            <map to='#9d7660'>
+              <bucket>&quot;Medisch Centrum Slotervaart&quot;</bucket>
+            </map>
+            <map to='#9d7660'>
+              <bucket>&quot;Nieuw Sloten Zuidwest&quot;</bucket>
+            </map>
+            <map to='#9d7660'>
+              <bucket>&quot;Oostelijke Handelskade&quot;</bucket>
+            </map>
+            <map to='#9d7660'>
+              <bucket>&quot;Overamstel&quot;</bucket>
+            </map>
+            <map to='#9d7660'>
+              <bucket>&quot;RAI&quot;</bucket>
+            </map>
+            <map to='#9d7660'>
+              <bucket>&quot;Robert Scottbuurt West&quot;</bucket>
+            </map>
+            <map to='#9d7660'>
+              <bucket>&quot;Sloterpark&quot;</bucket>
+            </map>
+            <map to='#9d7660'>
+              <bucket>&quot;Surinamepleinbuurt&quot;</bucket>
+            </map>
+            <map to='#9d7660'>
+              <bucket>&quot;VU-kwartier&quot;</bucket>
+            </map>
+            <map to='#9d7660'>
+              <bucket>&quot;Van Brakelkwartier&quot;</bucket>
+            </map>
+            <map to='#9d7660'>
+              <bucket>&quot;Willemsparkbuurt Noord&quot;</bucket>
+            </map>
+            <map to='#9d7660'>
+              <bucket>&quot;Zuidwestkwadrant Osdorp Zuid&quot;</bucket>
+            </map>
+            <map to='#a0cbe8'>
+              <bucket>&quot;Aalsmeerwegbuurt West&quot;</bucket>
+            </map>
+            <map to='#a0cbe8'>
+              <bucket>&quot;Anjeliersbuurt Zuid&quot;</bucket>
+            </map>
+            <map to='#a0cbe8'>
+              <bucket>&quot;Beethovenbuurt&quot;</bucket>
+            </map>
+            <map to='#a0cbe8'>
+              <bucket>&quot;Bretten West&quot;</bucket>
+            </map>
+            <map to='#a0cbe8'>
+              <bucket>&quot;Buurt 5 Zuid&quot;</bucket>
+            </map>
+            <map to='#a0cbe8'>
+              <bucket>&quot;Da Costabuurt Noord&quot;</bucket>
+            </map>
+            <map to='#a0cbe8'>
+              <bucket>&quot;Diamantbuurt&quot;</bucket>
+            </map>
+            <map to='#a0cbe8'>
+              <bucket>&quot;Fannius Scholtenbuurt&quot;</bucket>
+            </map>
+            <map to='#a0cbe8'>
+              <bucket>&quot;Gein Zuioost&quot;</bucket>
+            </map>
+            <map to='#a0cbe8'>
+              <bucket>&quot;Hercules Seghersbuurt&quot;</bucket>
+            </map>
+            <map to='#a0cbe8'>
+              <bucket>&quot;Java-eiland&quot;</bucket>
+            </map>
+            <map to='#a0cbe8'>
+              <bucket>&quot;Kop Zuidas&quot;</bucket>
+            </map>
+            <map to='#a0cbe8'>
+              <bucket>&quot;Lizzy Ansinghbuurt&quot;</bucket>
+            </map>
+            <map to='#a0cbe8'>
+              <bucket>&quot;Middelveldsche Akerpolder&quot;</bucket>
+            </map>
+            <map to='#a0cbe8'>
+              <bucket>&quot;Nieuwe Meer&quot;</bucket>
+            </map>
+            <map to='#a0cbe8'>
+              <bucket>&quot;Oosterpark&quot;</bucket>
+            </map>
+            <map to='#a0cbe8'>
+              <bucket>&quot;Overtoomse Veld Noord&quot;</bucket>
+            </map>
+            <map to='#a0cbe8'>
+              <bucket>&quot;Rechte H-buurt&quot;</bucket>
+            </map>
+            <map to='#a0cbe8'>
+              <bucket>&quot;Sarphatistrook&quot;</bucket>
+            </map>
+            <map to='#a0cbe8'>
+              <bucket>&quot;Spaarndammerbuurt Noordoost&quot;</bucket>
+            </map>
+            <map to='#a0cbe8'>
+              <bucket>&quot;Terrasdorp&quot;</bucket>
+            </map>
+            <map to='#a0cbe8'>
+              <bucket>&quot;Van der Pekbuurt&quot;</bucket>
+            </map>
+            <map to='#a0cbe8'>
+              <bucket>&quot;Weesperbuurt&quot;</bucket>
+            </map>
+            <map to='#a0cbe8'>
+              <bucket>&quot;Woon- en Groengebied Sloterdijk&quot;</bucket>
+            </map>
+            <map to='#b07aa1'>
+              <bucket>&quot;Amstelveldbuurt&quot;</bucket>
+            </map>
+            <map to='#b07aa1'>
+              <bucket>&quot;Bedrijventerrein Hamerstraat&quot;</bucket>
+            </map>
+            <map to='#b07aa1'>
+              <bucket>&quot;Bloemgrachtbuurt&quot;</bucket>
+            </map>
+            <map to='#b07aa1'>
+              <bucket>&quot;Burgwallen Oost&quot;</bucket>
+            </map>
+            <map to='#b07aa1'>
+              <bucket>&quot;Cornelis Troostbuurt&quot;</bucket>
+            </map>
+            <map to='#b07aa1'>
+              <bucket>&quot;De Wittenbuurt Noord&quot;</bucket>
+            </map>
+            <map to='#b07aa1'>
+              <bucket>&quot;Emanuel van Meterenbuurt&quot;</bucket>
+            </map>
+            <map to='#b07aa1'>
+              <bucket>&quot;Gaasperpark&quot;</bucket>
+            </map>
+            <map to='#b07aa1'>
+              <bucket>&quot;Haveneiland Oost&quot;</bucket>
+            </map>
+            <map to='#b07aa1'>
+              <bucket>&quot;IJselbuurt Oost&quot;</bucket>
+            </map>
+            <map to='#b07aa1'>
+              <bucket>&quot;KNSM-eiland&quot;</bucket>
+            </map>
+            <map to='#b07aa1'>
+              <bucket>&quot;Leidsebuurt Zuidwest&quot;</bucket>
+            </map>
+            <map to='#b07aa1'>
+              <bucket>&quot;Marnixbuurt Noord&quot;</bucket>
+            </map>
+            <map to='#b07aa1'>
+              <bucket>&quot;Nieuw Sloten Noordwest&quot;</bucket>
+            </map>
+            <map to='#b07aa1'>
+              <bucket>&quot;Olympisch Stadion e.o.&quot;</bucket>
+            </map>
+            <map to='#b07aa1'>
+              <bucket>&quot;Osdorpplein e.o.&quot;</bucket>
+            </map>
+            <map to='#b07aa1'>
+              <bucket>&quot;Postjeskade e.o.&quot;</bucket>
+            </map>
+            <map to='#b07aa1'>
+              <bucket>&quot;Rijnbuurt West&quot;</bucket>
+            </map>
+            <map to='#b07aa1'>
+              <bucket>&quot;Sloterdijk III West&quot;</bucket>
+            </map>
+            <map to='#b07aa1'>
+              <bucket>&quot;Steigereiland Zuid&quot;</bucket>
+            </map>
+            <map to='#b07aa1'>
+              <bucket>&quot;Valeriusbuurt West&quot;</bucket>
+            </map>
+            <map to='#b07aa1'>
+              <bucket>&quot;Vondelparkbuurt Oost&quot;</bucket>
+            </map>
+            <map to='#b07aa1'>
+              <bucket>&quot;Wielingenbuurt&quot;</bucket>
+            </map>
+            <map to='#b07aa1'>
+              <bucket>&quot;Zuidwestkwadrant Indische buurt&quot;</bucket>
+            </map>
+            <map to='#b6992d'>
+              <bucket>&quot;Amerikahaven&quot;</bucket>
+            </map>
+            <map to='#b6992d'>
+              <bucket>&quot;Banne Zuidoost&quot;</bucket>
+            </map>
+            <map to='#b6992d'>
+              <bucket>&quot;Bertelmanpleinbuurt&quot;</bucket>
+            </map>
+            <map to='#b6992d'>
+              <bucket>&quot;Buikslotermeer Noord&quot;</bucket>
+            </map>
+            <map to='#b6992d'>
+              <bucket>&quot;Buurt 10&quot;</bucket>
+            </map>
+            <map to='#b6992d'>
+              <bucket>&quot;De Aker West&quot;</bucket>
+            </map>
+            <map to='#b6992d'>
+              <bucket>&quot;Drieburg&quot;</bucket>
+            </map>
+            <map to='#b6992d'>
+              <bucket>&quot;Frans Halsbuurt&quot;</bucket>
+            </map>
+            <map to='#b6992d'>
+              <bucket>&quot;Gouden Bocht&quot;</bucket>
+            </map>
+            <map to='#b6992d'>
+              <bucket>&quot;Holendrecht West&quot;</bucket>
+            </map>
+            <map to='#b6992d'>
+              <bucket>&quot;K-buurt Midden&quot;</bucket>
+            </map>
+            <map to='#b6992d'>
+              <bucket>&quot;Laan van Spartaan&quot;</bucket>
+            </map>
+            <map to='#b6992d'>
+              <bucket>&quot;Marathonbuurt Oost&quot;</bucket>
+            </map>
+            <map to='#b6992d'>
+              <bucket>&quot;Middenmeer Noord&quot;</bucket>
+            </map>
+            <map to='#b6992d'>
+              <bucket>&quot;Nieuwendijk Noord&quot;</bucket>
+            </map>
+            <map to='#b6992d'>
+              <bucket>&quot;Oostpoort&quot;</bucket>
+            </map>
+            <map to='#b6992d'>
+              <bucket>&quot;Park de Meer&quot;</bucket>
+            </map>
+            <map to='#b6992d'>
+              <bucket>&quot;Rembrandtpark Noord&quot;</bucket>
+            </map>
+            <map to='#b6992d'>
+              <bucket>&quot;Schellingwoude Noord&quot;</bucket>
+            </map>
+            <map to='#b6992d'>
+              <bucket>&quot;Sporenburg&quot;</bucket>
+            </map>
+            <map to='#b6992d'>
+              <bucket>&quot;Tuindorp Frankendael&quot;</bucket>
+            </map>
+            <map to='#b6992d'>
+              <bucket>&quot;Venserpolder Oost&quot;</bucket>
+            </map>
+            <map to='#b6992d'>
+              <bucket>&quot;Werengouw Zuid&quot;</bucket>
+            </map>
+            <map to='#b6992d'>
+              <bucket>&quot;Zeeburgereiland Noordwest&quot;</bucket>
+            </map>
+            <map to='#bab0ac'>
+              <bucket>&quot;Amstelkwartier West&quot;</bucket>
+            </map>
+            <map to='#bab0ac'>
+              <bucket>&quot;Bedrijvengebied Veelaan&quot;</bucket>
+            </map>
+            <map to='#bab0ac'>
+              <bucket>&quot;Blauwe Zand&quot;</bucket>
+            </map>
+            <map to='#bab0ac'>
+              <bucket>&quot;Buitenveldert Zuidwest&quot;</bucket>
+            </map>
+            <map to='#bab0ac'>
+              <bucket>&quot;Concertgebouwbuurt&quot;</bucket>
+            </map>
+            <map to='#bab0ac'>
+              <bucket>&quot;De Punt&quot;</bucket>
+            </map>
+            <map to='#bab0ac'>
+              <bucket>&quot;Elandsgrachtbuurt&quot;</bucket>
+            </map>
+            <map to='#bab0ac'>
+              <bucket>&quot;G-buurt West&quot;</bucket>
+            </map>
+            <map to='#bab0ac'>
+              <bucket>&quot;Haveneiland Noord&quot;</bucket>
+            </map>
+            <map to='#bab0ac'>
+              <bucket>&quot;Huntum&quot;</bucket>
+            </map>
+            <map to='#bab0ac'>
+              <bucket>&quot;Kattenburg&quot;</bucket>
+            </map>
+            <map to='#bab0ac'>
+              <bucket>&quot;Leidsebuurt Noordoost&quot;</bucket>
+            </map>
+            <map to='#bab0ac'>
+              <bucket>&quot;Markengouw Zuid&quot;</bucket>
+            </map>
+            <map to='#bab0ac'>
+              <bucket>&quot;NDSM terrein&quot;</bucket>
+            </map>
+            <map to='#bab0ac'>
+              <bucket>&quot;Noordoostkwadrant Indische buurt&quot;</bucket>
+            </map>
+            <map to='#bab0ac'>
+              <bucket>&quot;Osdorp Zuidoost&quot;</bucket>
+            </map>
+            <map to='#bab0ac'>
+              <bucket>&quot;Planciusbuurt Noord&quot;</bucket>
+            </map>
+            <map to='#bab0ac'>
+              <bucket>&quot;Rietlanden&quot;</bucket>
+            </map>
+            <map to='#bab0ac'>
+              <bucket>&quot;Science Park Zuid&quot;</bucket>
+            </map>
+            <map to='#bab0ac'>
+              <bucket>&quot;Staatsliedenbuurt Noordoost&quot;</bucket>
+            </map>
+            <map to='#bab0ac'>
+              <bucket>&quot;Uilenburg&quot;</bucket>
+            </map>
+            <map to='#bab0ac'>
+              <bucket>&quot;Vondelpark Oost&quot;</bucket>
+            </map>
+            <map to='#bab0ac'>
+              <bucket>&quot;Westlandgrachtbuurt&quot;</bucket>
+            </map>
+            <map to='#bab0ac'>
+              <bucket>&quot;Zuiderhof&quot;</bucket>
+            </map>
+            <map to='#d37295'>
+              <bucket>&quot;Amstelkwartier Zuid&quot;</bucket>
+            </map>
+            <map to='#d37295'>
+              <bucket>&quot;Bedrijvengebied Zeeburgerkade&quot;</bucket>
+            </map>
+            <map to='#d37295'>
+              <bucket>&quot;Bloemenbuurt Noord&quot;</bucket>
+            </map>
+            <map to='#d37295'>
+              <bucket>&quot;Burgemeester Tellegenbuurt Oost&quot;</bucket>
+            </map>
+            <map to='#d37295'>
+              <bucket>&quot;Cornelis Douwesterrein&quot;</bucket>
+            </map>
+            <map to='#d37295'>
+              <bucket>&quot;De Wester Quartier&quot;</bucket>
+            </map>
+            <map to='#d37295'>
+              <bucket>&quot;Elzenhagen Noord&quot;</bucket>
+            </map>
+            <map to='#d37295'>
+              <bucket>&quot;Gaasperdam Noord&quot;</bucket>
+            </map>
+            <map to='#d37295'>
+              <bucket>&quot;Haveneiland Noordoost&quot;</bucket>
+            </map>
+            <map to='#d37295'>
+              <bucket>&quot;IJplein e.o.&quot;</bucket>
+            </map>
+            <map to='#d37295'>
+              <bucket>&quot;Kazernebuurt&quot;</bucket>
+            </map>
+            <map to='#d37295'>
+              <bucket>&quot;Leidsebuurt Noordwest&quot;</bucket>
+            </map>
+            <map to='#d37295'>
+              <bucket>&quot;Markthallen&quot;</bucket>
+            </map>
+            <map to='#d37295'>
+              <bucket>&quot;Nes e.o.&quot;</bucket>
+            </map>
+            <map to='#d37295'>
+              <bucket>&quot;Noordwestkwadrant Indische buurt Noord&quot;</bucket>
+            </map>
+            <map to='#d37295'>
+              <bucket>&quot;Osdorper Binnenpolder&quot;</bucket>
+            </map>
+            <map to='#d37295'>
+              <bucket>&quot;Planciusbuurt Zuid&quot;</bucket>
+            </map>
+            <map to='#d37295'>
+              <bucket>&quot;Rijnbuurt Midden&quot;</bucket>
+            </map>
+            <map to='#d37295'>
+              <bucket>&quot;Sloterdijk II&quot;</bucket>
+            </map>
+            <map to='#d37295'>
+              <bucket>&quot;Stationsplein e.o.&quot;</bucket>
+            </map>
+            <map to='#d37295'>
+              <bucket>&quot;Utrechtsebuurt Zuid&quot;</bucket>
+            </map>
+            <map to='#d37295'>
+              <bucket>&quot;Vondelpark West&quot;</bucket>
+            </map>
+            <map to='#d37295'>
+              <bucket>&quot;Weteringbuurt&quot;</bucket>
+            </map>
+            <map to='#d37295'>
+              <bucket>&quot;Zuiderkerkbuurt&quot;</bucket>
+            </map>
+            <map to='#d4a6c8'>
+              <bucket>&quot;Amsterdamse Bos&quot;</bucket>
+            </map>
+            <map to='#d4a6c8'>
+              <bucket>&quot;Bedrijventerrein Landlust&quot;</bucket>
+            </map>
+            <map to='#d4a6c8'>
+              <bucket>&quot;Borgerbuurt&quot;</bucket>
+            </map>
+            <map to='#d4a6c8'>
+              <bucket>&quot;Buurt 2&quot;</bucket>
+            </map>
+            <map to='#d4a6c8'>
+              <bucket>&quot;Cremerbuurt Oost&quot;</bucket>
+            </map>
+            <map to='#d4a6c8'>
+              <bucket>&quot;De Wittenbuurt Zuid&quot;</bucket>
+            </map>
+            <map to='#d4a6c8'>
+              <bucket>&quot;Entrepot-Noordwest&quot;</bucket>
+            </map>
+            <map to='#d4a6c8'>
+              <bucket>&quot;Gaasperplas&quot;</bucket>
+            </map>
+            <map to='#d4a6c8'>
+              <bucket>&quot;Haveneiland Zuidwest/Rieteiland West&quot;</bucket>
+            </map>
+            <map to='#d4a6c8'>
+              <bucket>&quot;IJselbuurt West&quot;</bucket>
+            </map>
+            <map to='#d4a6c8'>
+              <bucket>&quot;Kolenkitbuurt Noord&quot;</bucket>
+            </map>
+            <map to='#d4a6c8'>
+              <bucket>&quot;Leidsegracht Noord&quot;</bucket>
+            </map>
+            <map to='#d4a6c8'>
+              <bucket>&quot;Marnixbuurt Zuid&quot;</bucket>
+            </map>
+            <map to='#d4a6c8'>
+              <bucket>&quot;Nieuw Sloten Zuidoost&quot;</bucket>
+            </map>
+            <map to='#d4a6c8'>
+              <bucket>&quot;Ookmeer&quot;</bucket>
+            </map>
+            <map to='#d4a6c8'>
+              <bucket>&quot;Oude Kerk e.o.&quot;</bucket>
+            </map>
+            <map to='#d4a6c8'>
+              <bucket>&quot;Prinses Irenebuurt&quot;</bucket>
+            </map>
+            <map to='#d4a6c8'>
+              <bucket>&quot;Robert Scottbuurt Oost&quot;</bucket>
+            </map>
+            <map to='#d4a6c8'>
+              <bucket>&quot;Slotermeer Zuid&quot;</bucket>
+            </map>
+            <map to='#d4a6c8'>
+              <bucket>&quot;Strandeiland&quot;</bucket>
+            </map>
+            <map to='#d4a6c8'>
+              <bucket>&quot;Valkenburg&quot;</bucket>
+            </map>
+            <map to='#d4a6c8'>
+              <bucket>&quot;Vondelparkbuurt West&quot;</bucket>
+            </map>
+            <map to='#d4a6c8'>
+              <bucket>&quot;Wildeman&quot;</bucket>
+            </map>
+            <map to='#d4a6c8'>
+              <bucket>&quot;Zuidwestkwadrant Osdorp Noord&quot;</bucket>
+            </map>
+            <map to='#d7b5a6'>
+              <bucket>&quot;Andreasterrein&quot;</bucket>
+            </map>
+            <map to='#d7b5a6'>
+              <bucket>&quot;Bedrijventerrein Schinkel&quot;</bucket>
+            </map>
+            <map to='#d7b5a6'>
+              <bucket>&quot;Bosleeuw&quot;</bucket>
+            </map>
+            <map to='#d7b5a6'>
+              <bucket>&quot;Buurt 4 Oost&quot;</bucket>
+            </map>
+            <map to='#d7b5a6'>
+              <bucket>&quot;Czaar Peterbuurt&quot;</bucket>
+            </map>
+            <map to='#d7b5a6'>
+              <bucket>&quot;Delflandpleinbuurt West&quot;</bucket>
+            </map>
+            <map to='#d7b5a6'>
+              <bucket>&quot;Erasmusparkbuurt West&quot;</bucket>
+            </map>
+            <map to='#d7b5a6'>
+              <bucket>&quot;Gein Noordwest&quot;</bucket>
+            </map>
+            <map to='#d7b5a6'>
+              <bucket>&quot;Hemelrijk&quot;</bucket>
+            </map>
+            <map to='#d7b5a6'>
+              <bucket>&quot;Jacques Veldmanbuurt&quot;</bucket>
+            </map>
+            <map to='#d7b5a6'>
+              <bucket>&quot;Koningin Wilhelminaplein&quot;</bucket>
+            </map>
+            <map to='#d7b5a6'>
+              <bucket>&quot;Leliegracht e.o.&quot;</bucket>
+            </map>
+            <map to='#d7b5a6'>
+              <bucket>&quot;Meer en Oever&quot;</bucket>
+            </map>
+            <map to='#d7b5a6'>
+              <bucket>&quot;Nieuwe Diep/Diemerpark&quot;</bucket>
+            </map>
+            <map to='#d7b5a6'>
+              <bucket>&quot;Oostenburg&quot;</bucket>
+            </map>
+            <map to='#d7b5a6'>
+              <bucket>&quot;Overbraker Binnenpolder&quot;</bucket>
+            </map>
+            <map to='#d7b5a6'>
+              <bucket>&quot;Ransdorp&quot;</bucket>
+            </map>
+            <map to='#d7b5a6'>
+              <bucket>&quot;Rode Kruisbuurt&quot;</bucket>
+            </map>
+            <map to='#d7b5a6'>
+              <bucket>&quot;Sloterweg e.o.&quot;</bucket>
+            </map>
+            <map to='#d7b5a6'>
+              <bucket>&quot;Swammerdambuurt&quot;</bucket>
+            </map>
+            <map to='#d7b5a6'>
+              <bucket>&quot;Van der Helstpleinbuurt&quot;</bucket>
+            </map>
+            <map to='#d7b5a6'>
+              <bucket>&quot;Walvisbuurt&quot;</bucket>
+            </map>
+            <map to='#d7b5a6'>
+              <bucket>&quot;Willibrordusbuurt&quot;</bucket>
+            </map>
+            <map to='#d7b5a6'>
+              <bucket>&quot;Zunderdorp&quot;</bucket>
+            </map>
+            <map to='#e15759'>
+              <bucket>&quot;Amstel III deel C/D Zuid&quot;</bucket>
+            </map>
+            <map to='#e15759'>
+              <bucket>&quot;Bedrijvencentrum Osdorp&quot;</bucket>
+            </map>
+            <map to='#e15759'>
+              <bucket>&quot;Bijlmermuseum Zuid&quot;</bucket>
+            </map>
+            <map to='#e15759'>
+              <bucket>&quot;Buitenveldert Oost Midden&quot;</bucket>
+            </map>
+            <map to='#e15759'>
+              <bucket>&quot;Circus/Kermisbuurt&quot;</bucket>
+            </map>
+            <map to='#e15759'>
+              <bucket>&quot;De Kleine Wereld&quot;</bucket>
+            </map>
+            <map to='#e15759'>
+              <bucket>&quot;E-buurt&quot;</bucket>
+            </map>
+            <map to='#e15759'>
+              <bucket>&quot;Frederikspleinbuurt&quot;</bucket>
+            </map>
+            <map to='#e15759'>
+              <bucket>&quot;Haarlemmerbuurt West&quot;</bucket>
+            </map>
+            <map to='#e15759'>
+              <bucket>&quot;Hoptille&quot;</bucket>
+            </map>
+            <map to='#e15759'>
+              <bucket>&quot;Kadoelen&quot;</bucket>
+            </map>
+            <map to='#e15759'>
+              <bucket>&quot;Langestraat e.o.&quot;</bucket>
+            </map>
+            <map to='#e15759'>
+              <bucket>&quot;Marjoleinterrein&quot;</bucket>
+            </map>
+            <map to='#e15759'>
+              <bucket>&quot;Minervabuurt Zuid&quot;</bucket>
+            </map>
+            <map to='#e15759'>
+              <bucket>&quot;Noorderstrook Oost&quot;</bucket>
+            </map>
+            <map to='#e15759'>
+              <bucket>&quot;Orteliusbuurt Zuid&quot;</bucket>
+            </map>
+            <map to='#e15759'>
+              <bucket>&quot;Petroleumhaven&quot;</bucket>
+            </map>
+            <map to='#e15759'>
+              <bucket>&quot;Riekerhaven&quot;</bucket>
+            </map>
+            <map to='#e15759'>
+              <bucket>&quot;Schinkelbuurt Zuid&quot;</bucket>
+            </map>
+            <map to='#e15759'>
+              <bucket>&quot;Spuistraat Noord&quot;</bucket>
+            </map>
+            <map to='#e15759'>
+              <bucket>&quot;Tuindorp Oostzaan West&quot;</bucket>
+            </map>
+            <map to='#e15759'>
+              <bucket>&quot;Vogelbuurt Noord&quot;</bucket>
+            </map>
+            <map to='#e15759'>
+              <bucket>&quot;Westerstaatsman&quot;</bucket>
+            </map>
+            <map to='#e15759'>
+              <bucket>&quot;Zorgvlied&quot;</bucket>
+            </map>
+            <map to='#f1ce63'>
+              <bucket>&quot;Amstel III deel A/B Noord&quot;</bucket>
+            </map>
+            <map to='#f1ce63'>
+              <bucket>&quot;Banne Zuidwest&quot;</bucket>
+            </map>
+            <map to='#f1ce63'>
+              <bucket>&quot;Betondorp&quot;</bucket>
+            </map>
+            <map to='#f1ce63'>
+              <bucket>&quot;Buikslotermeerplein&quot;</bucket>
+            </map>
+            <map to='#f1ce63'>
+              <bucket>&quot;Buyskade e.o.&quot;</bucket>
+            </map>
+            <map to='#f1ce63'>
+              <bucket>&quot;De Bongerd&quot;</bucket>
+            </map>
+            <map to='#f1ce63'>
+              <bucket>&quot;Driehoekbuurt&quot;</bucket>
+            </map>
+            <map to='#f1ce63'>
+              <bucket>&quot;Frederik Hendrikbuurt Noord&quot;</bucket>
+            </map>
+            <map to='#f1ce63'>
+              <bucket>&quot;Groenmarktkadebuurt&quot;</bucket>
+            </map>
+            <map to='#f1ce63'>
+              <bucket>&quot;Holysloot&quot;</bucket>
+            </map>
+            <map to='#f1ce63'>
+              <bucket>&quot;K-buurt Zuidoost&quot;</bucket>
+            </map>
+            <map to='#f1ce63'>
+              <bucket>&quot;Landelijk gebied Driemond&quot;</bucket>
+            </map>
+            <map to='#f1ce63'>
+              <bucket>&quot;Marathonbuurt West&quot;</bucket>
+            </map>
+            <map to='#f1ce63'>
+              <bucket>&quot;Middenmeer Zuid&quot;</bucket>
+            </map>
+            <map to='#f1ce63'>
+              <bucket>&quot;Nieuwmarkt&quot;</bucket>
+            </map>
+            <map to='#f1ce63'>
+              <bucket>&quot;Oostzanerdijk&quot;</bucket>
+            </map>
+            <map to='#f1ce63'>
+              <bucket>&quot;Park Haagseweg&quot;</bucket>
+            </map>
+            <map to='#f1ce63'>
+              <bucket>&quot;Rembrandtpark Zuid&quot;</bucket>
+            </map>
+            <map to='#f1ce63'>
+              <bucket>&quot;Schellingwoude Oost&quot;</bucket>
+            </map>
+            <map to='#f1ce63'>
+              <bucket>&quot;Sportpark Middenmeer Noord&quot;</bucket>
+            </map>
+            <map to='#f1ce63'>
+              <bucket>&quot;Tuindorp Nieuwendam Oost&quot;</bucket>
+            </map>
+            <map to='#f1ce63'>
+              <bucket>&quot;Vervoerscentrum&quot;</bucket>
+            </map>
+            <map to='#f1ce63'>
+              <bucket>&quot;Westelijke eilanden&quot;</bucket>
+            </map>
+            <map to='#f1ce63'>
+              <bucket>&quot;Zeeburgereiland Zuidoost&quot;</bucket>
+            </map>
+            <map to='#f28e2b'>
+              <bucket>&quot;Afrikahaven&quot;</bucket>
+            </map>
+            <map to='#f28e2b'>
+              <bucket>&quot;Architectenbuurt&quot;</bucket>
+            </map>
+            <map to='#f28e2b'>
+              <bucket>&quot;Begijnhofbuurt&quot;</bucket>
+            </map>
+            <map to='#f28e2b'>
+              <bucket>&quot;Buiksloterbreek&quot;</bucket>
+            </map>
+            <map to='#f28e2b'>
+              <bucket>&quot;Buurt 6&quot;</bucket>
+            </map>
+            <map to='#f28e2b'>
+              <bucket>&quot;Da Costabuurt Zuid&quot;</bucket>
+            </map>
+            <map to='#f28e2b'>
+              <bucket>&quot;Diepenbrockbuurt&quot;</bucket>
+            </map>
+            <map to='#f28e2b'>
+              <bucket>&quot;Felix Meritisbuurt&quot;</bucket>
+            </map>
+            <map to='#f28e2b'>
+              <bucket>&quot;Gelderlandpleinbuurt&quot;</bucket>
+            </map>
+            <map to='#f28e2b'>
+              <bucket>&quot;Het Funen&quot;</bucket>
+            </map>
+            <map to='#f28e2b'>
+              <bucket>&quot;Johan Jongkindbuurt&quot;</bucket>
+            </map>
+            <map to='#f28e2b'>
+              <bucket>&quot;Kortenaerkwartier&quot;</bucket>
+            </map>
+            <map to='#f28e2b'>
+              <bucket>&quot;Loenermark&quot;</bucket>
+            </map>
+            <map to='#f28e2b'>
+              <bucket>&quot;Middeneiland Noordoost&quot;</bucket>
+            </map>
+            <map to='#f28e2b'>
+              <bucket>&quot;Nieuwe Oosterbegraafplaats&quot;</bucket>
+            </map>
+            <map to='#f28e2b'>
+              <bucket>&quot;Oosterparkbuurt Noordwest&quot;</bucket>
+            </map>
+            <map to='#f28e2b'>
+              <bucket>&quot;Overtoomse Veld Zuid&quot;</bucket>
+            </map>
+            <map to='#f28e2b'>
+              <bucket>&quot;Reguliersbuurt&quot;</bucket>
+            </map>
+            <map to='#f28e2b'>
+              <bucket>&quot;Scheepvaarthuisbuurt&quot;</bucket>
+            </map>
+            <map to='#f28e2b'>
+              <bucket>&quot;Spaarndammerbuurt Noordwest&quot;</bucket>
+            </map>
+            <map to='#f28e2b'>
+              <bucket>&quot;Transvaalbuurt Oost&quot;</bucket>
+            </map>
+            <map to='#f28e2b'>
+              <bucket>&quot;Van Loonbuurt&quot;</bucket>
+            </map>
+            <map to='#f28e2b'>
+              <bucket>&quot;Weespertrekvaart&quot;</bucket>
+            </map>
+            <map to='#f28e2b'>
+              <bucket>&quot;Zaagpoortbuurt&quot;</bucket>
+            </map>
+            <map to='#fabfd2'>
+              <bucket>&quot;Amstelpark&quot;</bucket>
+            </map>
+            <map to='#fabfd2'>
+              <bucket>&quot;Bedrijvenpark Lutkemeer&quot;</bucket>
+            </map>
+            <map to='#fabfd2'>
+              <bucket>&quot;Bloemenbuurt Zuid&quot;</bucket>
+            </map>
+            <map to='#fabfd2'>
+              <bucket>&quot;Burgemeester Tellegenbuurt West&quot;</bucket>
+            </map>
+            <map to='#fabfd2'>
+              <bucket>&quot;Cornelis Schuytbuurt&quot;</bucket>
+            </map>
+            <map to='#fabfd2'>
+              <bucket>&quot;De Wetbuurt&quot;</bucket>
+            </map>
+            <map to='#fabfd2'>
+              <bucket>&quot;Elzenhagen Zuid&quot;</bucket>
+            </map>
+            <map to='#fabfd2'>
+              <bucket>&quot;Gaasperdam Zuid&quot;</bucket>
+            </map>
+            <map to='#fabfd2'>
+              <bucket>&quot;Haveneiland Noordwest&quot;</bucket>
+            </map>
+            <map to='#fabfd2'>
+              <bucket>&quot;IJsbaanpad e.o.&quot;</bucket>
+            </map>
+            <map to='#fabfd2'>
+              <bucket>&quot;Kelbergen&quot;</bucket>
+            </map>
+            <map to='#fabfd2'>
+              <bucket>&quot;Leidsebuurt Zuidoost&quot;</bucket>
+            </map>
+            <map to='#fabfd2'>
+              <bucket>&quot;Marnixbuurt Midden&quot;</bucket>
+            </map>
+            <map to='#fabfd2'>
+              <bucket>&quot;Nieuw Sloten Noordoost&quot;</bucket>
+            </map>
+            <map to='#fabfd2'>
+              <bucket>&quot;Noordwestkwadrant Indische buurt Zuid&quot;</bucket>
+            </map>
+            <map to='#fabfd2'>
+              <bucket>&quot;Osdorper Bovenpolder&quot;</bucket>
+            </map>
+            <map to='#fabfd2'>
+              <bucket>&quot;Plantage&quot;</bucket>
+            </map>
+            <map to='#fabfd2'>
+              <bucket>&quot;Rijnbuurt Oost&quot;</bucket>
+            </map>
+            <map to='#fabfd2'>
+              <bucket>&quot;Sloterdijk III Oost&quot;</bucket>
+            </map>
+            <map to='#fabfd2'>
+              <bucket>&quot;Steigereiland Noord&quot;</bucket>
+            </map>
+            <map to='#fabfd2'>
+              <bucket>&quot;Valeriusbuurt Oost&quot;</bucket>
+            </map>
+            <map to='#fabfd2'>
+              <bucket>&quot;Vondelparkbuurt Midden&quot;</bucket>
+            </map>
+            <map to='#fabfd2'>
+              <bucket>&quot;WG-terrein&quot;</bucket>
+            </map>
+            <map to='#fabfd2'>
+              <bucket>&quot;Zuidoostkwadrant Indische buurt&quot;</bucket>
+            </map>
+            <map to='#ff9d9a'>
+              <bucket>&quot;Amstelglorie&quot;</bucket>
+            </map>
+            <map to='#ff9d9a'>
+              <bucket>&quot;Bedrijvencentrum Westerkwartier&quot;</bucket>
+            </map>
+            <map to='#ff9d9a'>
+              <bucket>&quot;Bijlmerpark Oost&quot;</bucket>
+            </map>
+            <map to='#ff9d9a'>
+              <bucket>&quot;Buitenveldert West Midden&quot;</bucket>
+            </map>
+            <map to='#ff9d9a'>
+              <bucket>&quot;Coenhaven/Mercuriushaven&quot;</bucket>
+            </map>
+            <map to='#ff9d9a'>
+              <bucket>&quot;De Klenckebuurt&quot;</bucket>
+            </map>
+            <map to='#ff9d9a'>
+              <bucket>&quot;Ecowijk&quot;</bucket>
+            </map>
+            <map to='#ff9d9a'>
+              <bucket>&quot;G-buurt Noord&quot;</bucket>
+            </map>
+            <map to='#ff9d9a'>
+              <bucket>&quot;Hakfort/Huigenbos&quot;</bucket>
+            </map>
+            <map to='#ff9d9a'>
+              <bucket>&quot;Houthavens Oost&quot;</bucket>
+            </map>
+            <map to='#ff9d9a'>
+              <bucket>&quot;Kalverdriehoek&quot;</bucket>
+            </map>
+            <map to='#ff9d9a'>
+              <bucket>&quot;Lastage&quot;</bucket>
+            </map>
+            <map to='#ff9d9a'>
+              <bucket>&quot;Markengouw Midden&quot;</bucket>
+            </map>
+            <map to='#ff9d9a'>
+              <bucket>&quot;Molenwijk&quot;</bucket>
+            </map>
+            <map to='#ff9d9a'>
+              <bucket>&quot;Noorderstrook West&quot;</bucket>
+            </map>
+            <map to='#ff9d9a'>
+              <bucket>&quot;Osdorp Midden Noord&quot;</bucket>
+            </map>
+            <map to='#ff9d9a'>
+              <bucket>&quot;Pieter van der Doesbuurt&quot;</bucket>
+            </map>
+            <map to='#ff9d9a'>
+              <bucket>&quot;Riekerpolder&quot;</bucket>
+            </map>
+            <map to='#ff9d9a'>
+              <bucket>&quot;Schipluidenbuurt&quot;</bucket>
+            </map>
+            <map to='#ff9d9a'>
+              <bucket>&quot;Spuistraat Zuid&quot;</bucket>
+            </map>
+            <map to='#ff9d9a'>
+              <bucket>&quot;Twiske Oost&quot;</bucket>
+            </map>
+            <map to='#ff9d9a'>
+              <bucket>&quot;Vogelbuurt Zuid&quot;</bucket>
+            </map>
+            <map to='#ff9d9a'>
+              <bucket>&quot;Westhaven Noord&quot;</bucket>
+            </map>
+            <map to='#ff9d9a'>
+              <bucket>&quot;Zuidas Noord&quot;</bucket>
+            </map>
+            <map to='#ffbe7d'>
+              <bucket>&quot;Alexanderplein e.o.&quot;</bucket>
+            </map>
+            <map to='#ffbe7d'>
+              <bucket>&quot;Balboaplein e.o.&quot;</bucket>
+            </map>
+            <map to='#ffbe7d'>
+              <bucket>&quot;Belgiëplein e.o.&quot;</bucket>
+            </map>
+            <map to='#ffbe7d'>
+              <bucket>&quot;Buiksloterdijk Oost&quot;</bucket>
+            </map>
+            <map to='#ffbe7d'>
+              <bucket>&quot;Buurt 7&quot;</bucket>
+            </map>
+            <map to='#ffbe7d'>
+              <bucket>&quot;Dapperbuurt Noord&quot;</bucket>
+            </map>
+            <map to='#ffbe7d'>
+              <bucket>&quot;Don Bosco&quot;</bucket>
+            </map>
+            <map to='#ffbe7d'>
+              <bucket>&quot;Filips van Almondekwartier&quot;</bucket>
+            </map>
+            <map to='#ffbe7d'>
+              <bucket>&quot;Gerard Doubuurt&quot;</bucket>
+            </map>
+            <map to='#ffbe7d'>
+              <bucket>&quot;Hiltonbuurt&quot;</bucket>
+            </map>
+            <map to='#ffbe7d'>
+              <bucket>&quot;Johannnes Vermeerbuurt&quot;</bucket>
+            </map>
+            <map to='#ffbe7d'>
+              <bucket>&quot;Kortvoort&quot;</bucket>
+            </map>
+            <map to='#ffbe7d'>
+              <bucket>&quot;Lootsbuurt&quot;</bucket>
+            </map>
+            <map to='#ffbe7d'>
+              <bucket>&quot;Middeneiland Noordwest&quot;</bucket>
+            </map>
+            <map to='#ffbe7d'>
+              <bucket>&quot;Nieuwendammerdijk Oost&quot;</bucket>
+            </map>
+            <map to='#ffbe7d'>
+              <bucket>&quot;Oosterparkbuurt Zuidoost&quot;</bucket>
+            </map>
+            <map to='#ffbe7d'>
+              <bucket>&quot;P.C. Hooftbuurt&quot;</bucket>
+            </map>
+            <map to='#ffbe7d'>
+              <bucket>&quot;Reigersbos Midden&quot;</bucket>
+            </map>
+            <map to='#ffbe7d'>
+              <bucket>&quot;Scheldebuurt Midden&quot;</bucket>
+            </map>
+            <map to='#ffbe7d'>
+              <bucket>&quot;Spaarndammerbuurt Zuidoost&quot;</bucket>
+            </map>
+            <map to='#ffbe7d'>
+              <bucket>&quot;Transvaalbuurt West&quot;</bucket>
+            </map>
+            <map to='#ffbe7d'>
+              <bucket>&quot;Van Tuyllbuurt&quot;</bucket>
+            </map>
+            <map to='#ffbe7d'>
+              <bucket>&quot;Weesperzijde Midden/Zuid&quot;</bucket>
+            </map>
+            <map to='#ffbe7d'>
+              <bucket>&quot;Zamenhofstraat e.o.&quot;</bucket>
+            </map>
+          </encoding>
+        </style-rule>
+      </style>
+      <semantic-values>
+        <semantic-value key='[Country].[Name]' value='&quot;Germany&quot;' />
+      </semantic-values>
+      <date-options start-of-week='monday' />
+      <_.fcp.ObjectModelEncapsulateLegacy.true...object-graph>
+        <objects>
+          <object caption='ams_neighborhoods.shp' id='ams_neighborhoods.shp_FC4B585CDB2A44DA9830B33D8A5E2E7C'>
+            <properties context=''>
+              <relation join='full' type='join'>
+                <clause type='join'>
+                  <expression op='Intersects'>
+                    <expression op='[ams_neighborhoods.shp].[Geometry]' />
+                    <expression op='[combi_addresses.shp].[Geometry]' />
+                  </expression>
+                </clause>
+                <relation connection='ogrdirect.1uln8t50k57h7r14mj1pp0gvrk06' name='ams_neighborhoods.shp' table='[ams_neighborhoods.shp]' type='table'>
+                  <columns>
+                    <column datatype='string' name='Buurt_code' ordinal='0' />
+                    <column datatype='string' name='Buurt' ordinal='1' />
+                    <column datatype='string' name='Buurtcombi' ordinal='2' />
+                    <column datatype='string' name='Stadsdeel_' ordinal='3' />
+                    <column datatype='real' name='Opp_m2' ordinal='4' />
+                    <column datatype='integer' name='FID' ordinal='5' />
+                    <column datatype='spatial' name='Geometry' ordinal='6' />
+                  </columns>
+                </relation>
+                <relation connection='ogrdirect.0pn6ze11s4ks3j1c62jsl01ummc3' name='combi_addresses.shp' table='[combi_addresses.shp]' type='table'>
+                  <columns>
+                    <column datatype='integer' name='asking_pri' ordinal='0' />
+                    <column datatype='string' name='address' ordinal='1' />
+                    <column datatype='spatial' name='Geometry' ordinal='2' />
+                  </columns>
+                </relation>
+              </relation>
+            </properties>
+          </object>
+        </objects>
+      </_.fcp.ObjectModelEncapsulateLegacy.true...object-graph>
+    </datasource>
+  </datasources>
+  <mapsources>
+    <mapsource name='Tableau' />
+  </mapsources>
+  <worksheets>
+    <worksheet name='Sheet 1'>
+      <table>
+        <view>
+          <datasources>
+            <datasource caption='ams_neighborhoods' name='federated.1kguhi80oczmp51bwi6ap00mjkpz' />
+          </datasources>
+          <mapsources>
+            <mapsource name='Tableau' />
+          </mapsources>
+          <datasource-dependencies datasource='federated.1kguhi80oczmp51bwi6ap00mjkpz'>
+            <column datatype='string' name='[Buurt]' role='dimension' type='nominal' />
+            <column datatype='spatial' name='[Geometry (combi_addresses.shp)]' role='measure' type='nominal' />
+            <column datatype='spatial' name='[Geometry]' role='measure' type='nominal' />
+            <column datatype='integer' name='[asking_pri]' role='measure' type='quantitative' />
+            <column-instance column='[asking_pri]' derivation='Avg' name='[avg:asking_pri:qk]' pivot='key' type='quantitative' />
+            <column-instance column='[Geometry (combi_addresses.shp)]' derivation='Collect' name='[clct:Geometry (combi_addresses.shp):nk]' pivot='key' type='nominal' />
+            <column-instance column='[Geometry]' derivation='Collect' name='[clct:Geometry:nk]' pivot='key' type='nominal' />
+            <column-instance column='[Buurt]' derivation='None' name='[none:Buurt:nk]' pivot='key' type='nominal' />
+          </datasource-dependencies>
+          <filter class='quantitative' column='[federated.1kguhi80oczmp51bwi6ap00mjkpz].[Longitude (generated)]' included-values='non-null' />
+          <slices>
+            <column>[federated.1kguhi80oczmp51bwi6ap00mjkpz].[Longitude (generated)]</column>
+          </slices>
+          <aggregation value='true' />
+        </view>
+        <style>
+          <style-rule element='axis'>
+            <encoding attr='space' class='0' field='[federated.1kguhi80oczmp51bwi6ap00mjkpz].[Longitude (generated)]' field-type='quantitative' max='562295.55994634691' min='527049.97904567176' projection='EPSG:3857' range-type='fixed' scope='cols' type='space' />
+            <encoding attr='space' class='0' field='[federated.1kguhi80oczmp51bwi6ap00mjkpz].[Latitude (generated)]' field-type='quantitative' max='6876658.337497565' min='6856313.4812379004' projection='EPSG:3857' range-type='fixed' scope='rows' type='space' />
+          </style-rule>
+          <style-rule element='map'>
+            <format attr='washout' value='0.0' />
+          </style-rule>
+        </style>
+        <panes>
+          <pane id='5' selection-relaxation-option='selection-relaxation-allow'>
+            <view>
+              <breakdown value='auto' />
+            </view>
+            <mark class='Automatic' />
+            <encodings>
+              <color column='[federated.1kguhi80oczmp51bwi6ap00mjkpz].[none:Buurt:nk]' />
+              <tooltip column='[federated.1kguhi80oczmp51bwi6ap00mjkpz].[avg:asking_pri:qk]' />
+              <lod column='[federated.1kguhi80oczmp51bwi6ap00mjkpz].[clct:Geometry (combi_addresses.shp):nk]' />
+              <lod column='[federated.1kguhi80oczmp51bwi6ap00mjkpz].[clct:Geometry:nk]' />
+              <geometry column='[federated.1kguhi80oczmp51bwi6ap00mjkpz].[clct:Geometry (combi_addresses.shp):nk]' />
+            </encodings>
+            <style>
+              <style-rule element='mark'>
+                <format attr='mark-labels-cull' value='true' />
+                <format attr='mark-labels-show' value='false' />
+              </style-rule>
+            </style>
+          </pane>
+        </panes>
+        <rows>[federated.1kguhi80oczmp51bwi6ap00mjkpz].[Latitude (generated)]</rows>
+        <cols>[federated.1kguhi80oczmp51bwi6ap00mjkpz].[Longitude (generated)]</cols>
+      </table>
+      <simple-id uuid='{7E4D2AE9-A1FC-4AAD-A9AA-9759D3A2E151}' />
+    </worksheet>
+  </worksheets>
+  <windows saved-dpi-scale-factor='1.25' source-height='37'>
+    <window class='worksheet' maximized='true' name='Sheet 1'>
+      <cards>
+        <edge name='left'>
+          <strip size='160'>
+            <card type='pages' />
+            <card type='filters' />
+            <card type='marks' />
+          </strip>
+        </edge>
+        <edge name='top'>
+          <strip size='2147483647'>
+            <card type='columns' />
+          </strip>
+          <strip size='2147483647'>
+            <card type='rows' />
+          </strip>
+          <strip size='2147483647'>
+            <card type='title' />
+          </strip>
+        </edge>
+        <edge name='right'>
+          <strip size='160'>
+            <card pane-specification-id='5' param='[federated.1kguhi80oczmp51bwi6ap00mjkpz].[none:Buurt:nk]' type='color' />
+          </strip>
+        </edge>
+      </cards>
+      <viewpoint>
+        <highlight>
+          <color-one-way>
+            <field>[federated.1kguhi80oczmp51bwi6ap00mjkpz].[avg:asking_pri:qk]</field>
+            <field>[federated.1kguhi80oczmp51bwi6ap00mjkpz].[none:Buurt:nk]</field>
+          </color-one-way>
+        </highlight>
+        <default-map-tool-selection tool='1' />
+      </viewpoint>
+      <simple-id uuid='{DD86A0A6-73F1-41D1-B71D-29974A24DB04}' />
+    </window>
+  </windows>
+  <thumbnails>
+    <thumbnail height='192' name='Sheet 1' width='192'>
+      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
+      rkJggg==
+    </thumbnail>
+  </thumbnails>
+</workbook>

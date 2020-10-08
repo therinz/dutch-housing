@@ -70,13 +70,13 @@ class MachineLearnModel:
             *self.df[(self.df["asking_price"] > 10000000)
                      | (self.df["asking_price"] < 100000)].index,
             *self.df[self.df["build_year"] < 1600].index,
-            *self.df[self.df["service_fees_pm"] > 500].index,
+            *self.df[self.df["service_fees_pm"] > 500].index,  # 700?
             *self.df[(self.df["property_m3"] < 10)
-                     | (self.df["property_m3"] > 800)].index,
+                     | (self.df["property_m3"] > 800)].index,  # > 900?
             *self.df[self.df["num_bathrooms"] > 4].index,
             *self.df[self.df["num_toilets"] > 3].index,
-            *self.df[self.df["bedrooms"] > 5].index,
-            *self.df[self.df["days_online"] > 120].index
+            *self.df[self.df["bedrooms"] > 5].index,  # 6?
+            *self.df[self.df["days_online"] > 280].index  # was 120
         }
 
         # Drop rows that have outliers
@@ -98,14 +98,14 @@ class MachineLearnModel:
             *self.df[self.df["build_year"] < 1600].index,
             *self.df[self.df["land_m2"] > 600].index,
             *self.df[(self.df["property_m3"] < 10)
-                     | (self.df["property_m3"] > 800)].index,
+                     | (self.df["property_m3"] > 800)].index,  # 900?
             *self.df[self.df["living_m2"] > 500].index,
             *self.df[self.df["num_bathrooms"] > 5].index,
             *self.df[self.df["num_toilets"] > 4].index,
             *self.df[self.df["floors"] > 7].index,
             *self.df[self.df["rooms"] > 15].index,
-            *self.df[self.df["bedrooms"] > 8].index,
-            *self.df[self.df["days_online"] > 120].index
+            *self.df[self.df["bedrooms"] > 8].index,  # 9?
+            *self.df[self.df["days_online"] > 370].index
         }
 
         # Drop rows that have outliers

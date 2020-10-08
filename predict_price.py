@@ -48,7 +48,7 @@ def lookup_worth(verbose=False, debug=False):
     """Return predicted value of given listing."""
 
     # Debug mode to use stored data
-    log_print("Debug: on.", verbose)
+    log_print(f"Debug: {debug}.", verbose)
     if debug:
         df = pd.read_pickle(os.path.join("data", "predict.pkl"))
     else:
@@ -57,7 +57,7 @@ def lookup_worth(verbose=False, debug=False):
             os.remove(JSON)
 
         # Ask for type of lookup
-        prompt = "Whats the URL of the house? \n"
+        prompt = "What's the URL of the house? \n"
         url = ""
         while "funda.nl/" not in url:
             url = validate_input(prompt, type_=str, min_=10).strip(" \"\'")
@@ -104,7 +104,7 @@ def lookup_worth(verbose=False, debug=False):
         for mdl in mdls:
             ML_mdl.evaluate_model(mdl, viz=False, save=True)
     else:
-        mdl = "LA" if mode else "RI"
+        mdl = "LA" if mode else "LA"
         ML_mdl.evaluate_model(mdl, viz=False, save=True)
 
     # Make prediction
@@ -116,5 +116,4 @@ def lookup_worth(verbose=False, debug=False):
 
 
 if __name__ == '__main__':
-    lookup_worth(verbose=True, debug=True)
-
+    lookup_worth(verbose=False, debug=False)
