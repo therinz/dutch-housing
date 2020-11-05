@@ -1,15 +1,14 @@
 # (c) 2020 Rinze Douma
 
-import os
-import scrapy
+from pathlib import Path
 
+import scrapy
 import pandas as pd
 from scraping.scraping.spiders.funda_spider import value_block
 from scrapy.crawler import CrawlerProcess
 
-from notebooks.helpers import validate_input, log_print
-from notebooks.modelling import MachineLearnModel
-from notebooks.json_dataframe import APARTMENTS, clean_dataset
+from notebooks.modelling import MachineLearnModel, APARTMENTS
+from notebooks.json_dataframe import clean_dataset, validate_input, log_print
 
 
 class PredictSpider(scrapy.Spider):
@@ -41,20 +40,21 @@ class PredictSpider(scrapy.Spider):
         yield info
 
 
-JSON = os.path.join("data", "predict.json")
-
-
 def lookup_worth(verbose=False, debug=False):
     """Return predicted value of given listing."""
+
+    # Define paths
+    base_path = Path(__file__).resolve().parent / "data"
+    pickle = base_path / "predict.pkl"
+    json = base_path / "predict.json"
 
     # Debug mode to use stored data
     log_print(f"Debug: {debug}.", verbose)
     if debug:
-        df = pd.read_pickle(os.path.join("data", "predict.pkl"))
+        df = pd.read_pickle(pickle)
     else:
         # Cleanup before we start
-        if os.path.exists(JSON):
-            os.remove(JSON)
+        json.unlink(missing_ok=True)
 
         # Ask for type of lookup
         prompt = "What's the URL of the house? \n"
@@ -64,7 +64,8 @@ def lookup_worth(verbose=False, debug=False):
             prompt = "Not a valid url! Please try again: \n"
 
         # Set settings for crawler
-        settings = {"FEEDS": {JSON: {"format": "json"}},
+        rel_path = Path(json.parent.name, json.name)
+        settings = {"FEEDS": {rel_path: {"format": "json"}},
                     "LOG_ENABLED": True}
         if verbose:
             print("Retrieving data from funda.nl...")
@@ -78,10 +79,10 @@ def lookup_worth(verbose=False, debug=False):
         process.start()
 
         # Clean the data
-        df = clean_dataset(JSON, predict=True, verbose=verbose)
+        df = clean_dataset(json, predict=True, verbose=verbose)
 
         # Save for future debugging
-        df.to_pickle(os.path.join("data", "predict.pkl"))
+        df.to_pickle(pickle)
 
     # Store real asking price and then delete column
     ap = df.iloc[0]["asking_price"]
@@ -116,4 +117,4 @@ def lookup_worth(verbose=False, debug=False):
 
 
 if __name__ == '__main__':
-    lookup_worth(verbose=False, debug=False)
+    lookup_worth(verbose=True, debug=False)

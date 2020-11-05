@@ -1,7 +1,7 @@
 # (c) 2020 Rinze Douma
 
-import os
-import warnings
+from pathlib import Path
+# import warnings
 
 import pandas as pd
 from sklearn import linear_model
@@ -11,17 +11,19 @@ from sklearn.preprocessing import StandardScaler
 
 from notebooks.json_dataframe import APARTMENTS, log_print
 
+# Skip yellowbrick plots due to import warning
 # from yellowbrick.regressor import ResidualsPlot, PredictionError
 
-# Suppress yellowbrick warning
-warnings.simplefilter("ignore")
-
-BASE = os.path.join(os.getcwd(), "data")
+# Set base path
+BASE = Path(__file__).resolve().parent.parent / "data"
 
 
 class MachineLearnModel:
+    """Main class to pre-process and run machine learning models."""
+
     def __init__(self, filename="combination.pkl",
                  apartment=False, verbose=False):
+
         # Declare variables
         self.verbose = verbose
         self.X_train = self.X_test = self.y_train = self.y_test = pd.DataFrame
@@ -29,11 +31,11 @@ class MachineLearnModel:
         self.scaled_fit = self.ml_model = None
 
         # Open file
-        self.df = pd.read_pickle(os.path.join(BASE, filename))
-        log_print(f"total: {self.df.shape[0]}", verbose)
+        self.df = pd.read_pickle(BASE / filename)
+        log_print(f"Total: {self.df.shape[0]}", verbose)
 
         # Check for null values
-        if any(self.df.isnull().any()):
+        if self.df.isnull().values.any():
             raise ValueError("Null values present in DataFrame.")
 
         # Temp solution for incorrect column names
@@ -179,7 +181,7 @@ class MachineLearnModel:
                                         how="outer")
 
     def visualize_model(self, plot, model):
-        """Visualize the data for a mdl in a certain plot."""
+        """Visualize the data for a model in a specified plot."""
 
         visualizer = plot(model)
         visualizer.fit(self.X_train, self.y_train)
@@ -204,7 +206,10 @@ class MachineLearnModel:
 
         log_print(f"\n-----\nWorking on: {str(trans[model])}...", self.verbose)
 
-        """if viz:
+        """
+        Currently switched off due to import warning created by YellowBrick
+        
+        if viz:
             # Create residuals plot
             for plot in [ResidualsPlot, PredictionError]:
                 self.visualize_model(plot, ml_model)"""
@@ -218,7 +223,7 @@ class MachineLearnModel:
             test_r2 = r2_score(self.y_test, predictions)
 
             # Print to screen
-            size = self.X_train.shape[0]
+            size, _ = self.X_train.shape
             print(f"Total rows used for training: {size}"
                   f"\nR2 for training set: {train_r2:.3f}."
                   f"\nMean absolute error: {int(acc)}."
@@ -257,10 +262,10 @@ class MachineLearnModel:
 if __name__ == '__main__':
     """Run script if directly loaded."""
 
-    BASE = os.path.join(os.pardir, "data")
+    # Initialize class
+    ML_mdl = MachineLearnModel(apartment=True, verbose=True)
 
-    # Initialize model
-    ML_mdl = MachineLearnModel("combination.pkl", apartment=True, verbose=True)
+    # Evaluate different models
     mdls = ["LR", "RI", "LA", "EN"
             ]
     for mdl in mdls:

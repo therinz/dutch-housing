@@ -1,19 +1,20 @@
 # (c) 2020 Rinze Douma
 
 # Import libraries
-import os
+import sys
+from pathlib import Path
 from getpass import getpass
 
-import geopandas as gpd
 import numpy as np
 import pandas as pd
+import geopandas as gpd
 
 from notebooks.helpers import convert_elapsed_time, extract_num, build_era
 from notebooks.helpers import listing_type, roof_description, log_print
 from notebooks.helpers import garden, validate_input, contains_to_binary
 
 # Globals
-BASE = os.path.join(os.getcwd(), "data")
+BASE = Path(__file__).resolve().parent.parent / "data"
 APARTMENTS = ["pt_bovenwoning", "pt_benedenwoning", "pt_penthouse",
               "pt_corridorflat", "pt_portiekwoning"]
 temp = ""
@@ -23,12 +24,12 @@ def clean_dataset(filename, predict=None, verbose=False):
     """Open, clean and save a Funda dataset."""
 
     # Open JSON file
-    path = filename if predict else os.path.join(BASE, filename)
+    file = filename if predict else BASE / filename
     try:
-        df = pd.read_json(path)
+        df = pd.read_json(file)
     except (FileNotFoundError, ValueError):
-        print("File not found.")
-        return
+        print(f"Error: File {file} not found.")
+        sys.exit(1)
 
     log_print(f"Created DataFrame with {df.shape[0]} rows.", verbose)
 
@@ -59,12 +60,12 @@ def clean_dataset(filename, predict=None, verbose=False):
 
     # Check for common errors
     if df.columns.has_duplicates:
-        return print("Error: Duplicate column names.")
+        raise ValueError("Error: Duplicate column names.")
     if df.isna().values.any():
-        return print("Error: Dataframe contains null values.")
+        raise ValueError("Error: Dataframe contains null values.")
 
     # Get coordinates and bin into neighborhoods
-    #print("Please provide Google Maps API key:")
+    # print("Please provide Google Maps API key:")
     df = geolocation(df, temp)
     log_print("Finished geocoding.", verbose)
 
@@ -73,7 +74,7 @@ def clean_dataset(filename, predict=None, verbose=False):
         return df
 
     # Export to pickle file
-    path = os.path.join(BASE, filename.rsplit(".")[0] + ".pkl")
+    path = BASE / (filename.rsplit(".")[0] + ".pkl")
     df.to_pickle(path)
     log_print(f"Successfully exported to '{path}'.", verbose)
 
@@ -322,7 +323,7 @@ def geolocation(df, key):
     coords.to_crs(epsg=4326, inplace=True)
 
     # Load neighborhoods of Amsterdam
-    gdf = gpd.read_file(os.path.join(BASE, "geo", "ams_neighborhoods.shp"))
+    gdf = gpd.read_file(BASE / "geo" / "ams_neighborhoods.shp")
 
     # Add the neighborhood for every location
     geo_combi = (gpd
@@ -358,7 +359,7 @@ def combine_df(f1, f2, output=None):
     """Combine 2 dataframes in one and save as new pickle."""
 
     # Open files
-    dataframes = [pd.read_pickle(os.path.join(BASE, filename))
+    dataframes = [pd.read_pickle(BASE / filename)
                   for filename in [f1, f2]]
 
     # Combine
@@ -367,7 +368,7 @@ def combine_df(f1, f2, output=None):
     # Export
     if not output:
         output = "combination.pkl"
-    path = os.path.join(BASE, output)
+    path = BASE / output
     df.to_pickle(path)
     print(f"Successfully exported as {path}.")
 
