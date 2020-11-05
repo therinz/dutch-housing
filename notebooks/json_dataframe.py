@@ -17,7 +17,6 @@ from notebooks.helpers import garden, validate_input, contains_to_binary
 BASE = Path(__file__).resolve().parent.parent / "data"
 APARTMENTS = ["pt_bovenwoning", "pt_benedenwoning", "pt_penthouse",
               "pt_corridorflat", "pt_portiekwoning"]
-temp = ""
 
 
 def clean_dataset(filename, predict=None, verbose=False):
@@ -65,8 +64,8 @@ def clean_dataset(filename, predict=None, verbose=False):
         raise ValueError("Error: Dataframe contains null values.")
 
     # Get coordinates and bin into neighborhoods
-    # print("Please provide Google Maps API key:")
-    df = geolocation(df, temp)
+    print("Please provide Google Maps API key:")
+    df = geolocation(df, getpass())
     log_print("Finished geocoding.", verbose)
 
     # If in prediction apartment, don't export but return dataframe

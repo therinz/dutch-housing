@@ -98,8 +98,8 @@ def lookup_worth(verbose=False, debug=False):
     ML_mdl = MachineLearnModel(apartment=mode, verbose=verbose)
     if debug:
         mdls = [
-            # "RI",
-            "LA",
+            "RI",
+            # "LA",
             # "EN"
         ]
         for mdl in mdls:
