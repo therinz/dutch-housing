@@ -117,4 +117,4 @@ def lookup_worth(verbose=False, debug=False):
 
 
 if __name__ == '__main__':
-    lookup_worth(verbose=True, debug=False)
+    lookup_worth(verbose=False, debug=False)
