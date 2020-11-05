@@ -24,6 +24,8 @@ To use this tool, just open `predict_price.py`. The program will ask for the URL
 An image says a thousand words:
 ![Screenshot of use of program](https://github.com/therinz/dutch-housing/blob/master/visuals/Screenshot_showcase_Jupyter.png)
 
+The main function has an argument `verbose` which, when set to True, will provide logging the entire program and list more details at the end.
+
 ## Workflow
 1. Initially I started with a feasibility study and what it would take. The various steps were collected on a Trello board.
 2. To retrieve the data I had scrape the Funda website, for which I used Scrapy
