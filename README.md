@@ -19,7 +19,7 @@ A tool to predict the asking price of houses and apartments in Amsterdam
 For this project, I wanted to create a tool to check what a real estate listing in Amsterdam should cost. This way, one could check whether the asking price of a given listing is realistic or not. I've scraped a lot of data from the Dutch housing website www.funda.nl and trained a machine learning model to predict the price based on the characteristics mentioned with each listing. 
 
 ## Use
-To use this tool, just open `predict_price.py`. The program will ask for the URL of the listing to be questioned. After that, an API key will need to be entered in order to get the coordinates from Google Maps. Finally, the program will return the expected asking price, along with some information to put the numbers into perspective.
+To use this tool, just run `predict_price.py`. The program will ask for the URL of the listing to be questioned. After that, an API key will need to be entered in order to get the coordinates from Google Maps. Finally, the program will return the expected asking price, along with some information to put the numbers into perspective.
 
 An image says a thousand words:
 ![Screenshot of use of program](https://github.com/therinz/dutch-housing/blob/master/visuals/Screenshot_showcase_Jupyter.png)
